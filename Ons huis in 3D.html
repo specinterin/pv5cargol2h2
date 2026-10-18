@@ -1,0 +1,498 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Ons huis in 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: full-bleed 3D scene; drawing-sheet title block top-left, mode bar along the bottom */
+:root{
+  --scene:#d9dfdc; --panel:#f7f8f6; --ink:#22292b; --muted:#5f6b6d; --line:#c9d0cd;
+  --accent:#b4553a; --accent-ink:#ffffff; --chip:#e8ecea; --dim:#174a78; --dimbg:rgba(247,248,246,.88);
+  --f-hand:"Architects Daughter","Comic Sans MS",cursive;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --scene:#192022; --panel:#21292b; --ink:#e7ecea; --muted:#9aa7a8; --line:#36413f;
+  --accent:#d9795b; --accent-ink:#1a1210; --chip:#2b3436; --dim:#8cc4f0; --dimbg:rgba(25,32,34,.85); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --scene:#192022; --panel:#21292b; --ink:#e7ecea; --muted:#9aa7a8; --line:#36413f;
+  --accent:#d9795b; --accent-ink:#1a1210; --chip:#2b3436; --dim:#8cc4f0; --dimbg:rgba(25,32,34,.85); color-scheme:dark}
+html,body{height:100%}
+body{background:var(--scene);color:var(--ink);font-family:var(--f-body);overflow:hidden}
+#app{position:relative;height:100%;width:100%}
+#stage{position:absolute;inset:0}
+#stage canvas{display:block;width:100%;height:100%;touch-action:none}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.tag{position:absolute;transform:translate(-50%,-50%);font-family:var(--f-hand);font-size:15px;letter-spacing:.06em;
+  text-transform:uppercase;color:#1f2628;background:rgba(255,255,255,.82);padding:2px 8px;border-radius:3px;white-space:nowrap;
+  border:1px solid rgba(0,0,0,.12)}
+.sheet{position:absolute;top:12px;left:max(16px,env(safe-area-inset-left,0px));width:min(300px,calc(100% - 32px));
+  background:var(--panel);border:1.5px solid var(--ink);box-shadow:3px 3px 0 var(--line)}
+.sheet header{padding:12px 14px 10px;border-bottom:1.5px solid var(--ink)}
+.sheet h1{margin:0;font-family:var(--f-hand);font-weight:400;font-size:24px;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;text-wrap:balance}
+.sheet p{margin:4px 0 0;font-size:12.5px;color:var(--muted);line-height:1.4}
+.sheet details{font-size:13px}
+.sheet summary{cursor:pointer;padding:8px 14px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.levels{list-style:none;margin:0;padding:0 14px 10px;display:grid;gap:2px}
+.levels li{display:grid;grid-template-columns:62px 1fr;gap:10px;align-items:baseline;padding:2px 0;border-bottom:1px dashed var(--line)}
+.levels li:last-child{border-bottom:0}
+.levels b{font-family:var(--f-mono);font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
+.levels li.on{color:var(--accent)}
+.facts{padding:8px 14px 12px;border-top:1.5px solid var(--ink);display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12px}
+.facts span{display:block;color:var(--muted);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase}
+.facts strong{font-family:var(--f-mono);font-weight:500}
+.bar{position:absolute;left:0;right:0;bottom:0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.caption{font-size:12.5px;color:var(--ink);background:var(--panel);border:1px solid var(--line);padding:4px 10px;border-radius:3px;max-width:100%;text-align:center}
+.modes{pointer-events:auto;display:flex;flex-wrap:wrap;justify-content:center;gap:0;background:var(--panel);border:1.5px solid var(--ink);max-width:100%}
+.modes button,.toggles button{font:500 13px var(--f-body);color:var(--ink);background:transparent;border:0;padding:9px 13px;cursor:pointer}
+.modes button+button{border-left:1px solid var(--line)}
+.modes button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.modes button:focus-visible,.toggles button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.toggles{pointer-events:auto;display:flex;gap:6px}
+.toggles button{font-size:12px;padding:5px 10px;background:var(--chip);border:1px solid var(--line);border-radius:3px}
+.toggles button[aria-pressed="true"]{border-color:var(--ink)}
+.dim{position:absolute;transform:translate(-50%,-115%);font:500 11px var(--f-mono);font-variant-numeric:tabular-nums;color:var(--dim);
+  background:var(--dimbg);padding:0 3px;border-radius:2px;white-space:nowrap}
+.dim.flip{transform:translate(-50%,15%)}
+.dim.lvl{transform:translate(calc(-100% - 10px),-50%);font-weight:500}
+.dim.lvl.r{transform:translate(10px,-50%)}
+.layers{position:absolute;top:12px;right:max(16px,env(safe-area-inset-right,0px));width:220px;background:var(--panel);border:1.5px solid var(--ink);box-shadow:3px 3px 0 var(--line)}
+.layers summary{cursor:pointer;padding:8px 12px;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.layers fieldset{border:0;margin:0;padding:2px 12px 8px;display:grid;gap:2px}
+.layers fieldset+fieldset{border-top:1px dashed var(--line);padding-top:8px}
+.layers legend{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0;margin-bottom:2px;float:left;width:100%}
+.layers label{display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 0;cursor:pointer}
+.layers input{accent-color:var(--accent);width:15px;height:15px;margin:0}
+.layers .sw{width:14px;height:2px;background:var(--dim);margin-left:auto}
+@media (max-width:760px){
+  .layers{top:auto;bottom:calc(132px + env(safe-area-inset-bottom,0px));width:190px}
+}
+@media (max-width:560px){
+  .sheet{width:calc(100% - 32px)} .sheet h1{font-size:20px} .sheet p{display:none}
+  .modes button{padding:8px 9px;font-size:12px}
+  .layers{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+}
+</style>
+
+<div id="app">
+  <div id="stage"></div>
+  <div id="labels"></div>
+
+  <section class="sheet" aria-label="Tekeningblad">
+    <header>
+      <h1>Ons huis in 3D</h1>
+      <p>Opgebouwd uit de bouwtekeningen: plattegronden begane grond en verdieping, langs- en dwarsdoorsnede. Maten in centimeters, peilen in meters.</p>
+    </header>
+    <details id="lv" open>
+      <summary>Peilmaten</summary>
+      <ul class="levels" id="levels">
+        <li data-k="sch"><b>+8.60</b>Schoorsteen</li>
+        <li data-k="nok"><b>+7.80</b>Nok, pannendak</li>
+        <li data-k="zol"><b>+5.45</b>Houten balklaag zolder</li>
+        <li data-k="goot"><b>+4.78</b>Goot voorzijde</li>
+        <li data-k="ver"><b>+2.75</b>Verdiepingsvloer</li>
+        <li data-k="gar"><b>+2.70</b>Plat dak berging</li>
+        <li data-k="bg"><b>±0.00</b>Peil begane grond</li>
+        <li data-k="fun"><b>−0.95</b>Onderkant betonbalk</li>
+      </ul>
+    </details>
+    <div class="facts">
+      <div><span>Breedte</span><strong>12,30 m</strong></div>
+      <div><span>Diepte</span><strong>9,15 m</strong></div>
+      <div><span>Dakhelling</span><strong>≈ 35°</strong></div>
+      <div><span>Palen</span><strong>hout, 7,00 m</strong></div>
+    </div>
+  </section>
+
+  <details class="layers" id="layers" open>
+    <summary>Lagen</summary>
+    <fieldset>
+      <legend>Bouwdelen</legend>
+      <label><input type="checkbox" id="l-dak" checked> Dak</label>
+      <label><input type="checkbox" id="l-ver" checked> Verdieping</label>
+      <label><input type="checkbox" id="l-bg" checked> Begane grond</label>
+      <label><input type="checkbox" id="l-inr" checked> Inrichting</label>
+      <label><input type="checkbox" id="l-ter" checked> Terrein en tuin</label>
+    </fieldset>
+    <fieldset>
+      <legend>Maatvoering (cm)</legend>
+      <label><input type="checkbox" id="l-mbg"> Maten begane grond <span class="sw"></span></label>
+      <label><input type="checkbox" id="l-mver"> Maten verdieping <span class="sw"></span></label>
+      <label><input type="checkbox" id="l-mh" checked> Hoogtematen <span class="sw"></span></label>
+    </fieldset>
+  </details>
+
+  <div class="bar">
+    <div class="caption" id="caption">Buitenkant, gezien vanaf de straat</div>
+    <div class="modes" role="group" aria-label="Weergave">
+      <button id="m-ext" data-mode="ext" aria-pressed="true">Buitenkant</button>
+      <button id="m-bg" data-mode="bg" aria-pressed="false">Begane grond</button>
+      <button id="m-ver" data-mode="ver" aria-pressed="false">Verdieping</button>
+      <button id="m-langs" data-mode="langs" aria-pressed="false">Langsdoorsnede</button>
+      <button id="m-dwars" data-mode="dwars" aria-pressed="false">Dwarsdoorsnede</button>
+    </div>
+    <div class="toggles">
+      <button id="t-rot" aria-pressed="true">Langzaam draaien</button>
+      <button id="t-lab" aria-pressed="true">Ruimtenamen</button>
+      <button id="t-reset">Beeld herstellen</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const stage=document.getElementById('stage');
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.localClippingEnabled=true;
+renderer.outputEncoding=THREE.sRGBEncoding;
+stage.appendChild(renderer.domElement);
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(38,1,0.1,300);
+camera.position.set(-11,7,14);
+const controls=new THREE.OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true; controls.dampingFactor=.08;
+controls.target.set(0,2.4,0); controls.maxPolarAngle=Math.PI*0.495;
+controls.minDistance=4; controls.maxDistance=45; controls.autoRotateSpeed=0.6;
+
+function setSceneColor(){
+  const c=getComputedStyle(document.documentElement).getPropertyValue('--scene').trim()||'#d9dfdc';
+  scene.background=new THREE.Color(c);
+  scene.fog=new THREE.Fog(new THREE.Color(c),35,90);
+}
+setSceneColor();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',setSceneColor);}catch(e){}
+new MutationObserver(setSceneColor).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+scene.add(new THREE.HemisphereLight(0xf2f5ff,0x6b6650,0.75));
+const sun=new THREE.DirectionalLight(0xfff3e0,1.05);
+sun.position.set(-9,16,11); sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-14,right:14,top:14,bottom:-14,near:1,far:50});
+sun.shadow.bias=-0.0004; sun.shadow.normalBias=0.03;
+scene.add(sun);
+
+/* ---------- materials ---------- */
+const houseMats=[];
+function M(color,opts){const m=new THREE.MeshStandardMaterial(Object.assign({color,roughness:.88,metalness:0,side:THREE.DoubleSide},opts||{}));houseMats.push(m);return m;}
+function S(color,opts){return new THREE.MeshStandardMaterial(Object.assign({color,roughness:.95},opts||{}));}
+function gridTex(bg,ln,cell,stripes){
+  const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');
+  x.fillStyle=bg;x.fillRect(0,0,64,64);x.strokeStyle=ln;x.lineWidth=2;
+  x.beginPath(); if(!stripes){x.moveTo(0,1);x.lineTo(64,1);} x.moveTo(1,0);x.lineTo(1,64);
+  if(stripes){x.moveTo(0,1);x.lineTo(64,1);x.moveTo(0,40);x.lineTo(64,40);}
+  x.stroke();
+  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;
+}
+function tiledMat(bg,ln,rx,ry,isSite,stripes){const t=gridTex(bg,ln,0,stripes);t.repeat.set(rx,ry);return isSite?S(0xffffff,{map:t}):M(0xffffff,{map:t});}
+
+const brick=M(0xa35b43), plaster=M(0xeceae4), slabM=M(0xd8d2c6), frame=M(0xf3f2ec,{roughness:.5});
+const glass=M(0x9cc6d8,{transparent:true,opacity:.35,roughness:.1,metalness:.1,depthWrite:false});
+const wood=M(0xb98d60), concrete=M(0xa9a8a2), flat=M(0x3b3e41), garageDoor=M(0x6f7b78,{roughness:.6});
+const counter=M(0x7d8c8f), sofa=M(0x55707a), bed=M(0xe3ddd0), quilt=M(0x8aa2ad), wardrobe=M(0xcdbfa8), white=M(0xf7f7f5,{roughness:.4});
+const chimneyM=M(0x8e4f3b), rail=M(0x2b2f31), darkWood=M(0x6f4f37);
+const hallTile=tiledMat('#cfc8bb','#b7af9f',8,11), kitchenTile=tiledMat('#d6d1c4','#bdb6a6',9,14), bathTile=tiledMat('#dde6e7','#c0cccd',16,18);
+const k=235/337.5, theta=Math.atan(k);
+
+/* ---------- builders (all in cm, house origin = back-left outer corner) ---------- */
+const house=new THREE.Group(); house.scale.setScalar(0.01); house.position.set(-6.15,0,-3.1); scene.add(house);
+const G=new THREE.Group(), U=new THREE.Group(), R=new THREE.Group(), SITE=new THREE.Group();
+const FG=new THREE.Group(), FU=new THREE.Group();
+house.add(G,U,R,SITE,FG,FU);
+
+function box(g,x0,x1,y0,y1,z0,z1,mat,cast){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0),mat);
+  m.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);
+  m.castShadow=cast!==false&&mat!==glass; m.receiveShadow=mat!==glass; g.add(m); return m;
+}
+function pane(g,alongX,a,b,ya,yb,mid){
+  const put=(p0,p1,q0,q1,d,mat)=>alongX?box(g,p0,p1,q0,q1,mid-d/2,mid+d/2,mat,false):box(g,mid-d/2,mid+d/2,q0,q1,p0,p1,mat,false);
+  const f=6;
+  put(a+f,b-f,ya+f,yb-f,1.5,glass);
+  put(a,a+f,ya,yb,10,frame); put(b-f,b,ya,yb,10,frame);
+  put(a,b,yb-f,yb,10,frame); if(ya>1) put(a,b,ya,ya+f,10,frame);
+  const n=Math.round((b-a)/85);
+  for(let i=1;i<n;i++){const x=a+(b-a)*i/n;put(x-3,x+3,ya,yb,8,frame);}
+}
+function wall(g,x0,x1,z0,z1,y0,y1,mat,ops,glazed){
+  ops=ops||[]; glazed=glazed!==false;
+  const ax=(x1-x0)>=(z1-z0), A0=ax?x0:z0, A1=ax?x1:z1, mid=ax?(z0+z1)/2:(x0+x1)/2;
+  const seg=(a,b,ya,yb)=>{if(b-a<.5||yb-ya<.5)return; ax?box(g,a,b,ya,yb,z0,z1,mat):box(g,x0,x1,ya,yb,a,b,mat);};
+  let c=A0;
+  ops.slice().sort((p,q)=>p[0]-q[0]).forEach(([a,b,s,h])=>{
+    seg(c,a,y0,y1); seg(a,b,y0,y0+s); seg(a,b,y0+h,y1);
+    if(glazed) pane(g,ax,a,b,y0+s,y0+h,mid); c=b;
+  });
+  seg(c,A1,y0,y1);
+}
+function gable(g,x0,pts,holes,mat){ // pts in (z,y); extruded 27 cm along +x from x0
+  const s=new THREE.Shape(); pts.forEach((p,i)=>i?s.lineTo(p[0],p[1]):s.moveTo(p[0],p[1]));
+  (holes||[]).forEach(([z0,z1,y0,y1])=>{const h=new THREE.Path();h.moveTo(z0,y0);h.lineTo(z1,y0);h.lineTo(z1,y1);h.lineTo(z0,y1);h.lineTo(z0,y0);s.holes.push(h);});
+  const m=new THREE.Mesh(new THREE.ExtrudeGeometry(s,{depth:27,bevelEnabled:false}),mat||brick);
+  m.rotation.y=-Math.PI/2; m.position.x=x0+27; m.castShadow=m.receiveShadow=true; g.add(m); return m;
+}
+
+/* ---------- BEGANE GROND ---------- */
+// vloeren
+box(G,27,893,-4,0,27,328,wood); box(G,27,357,-4,0,328,648,wood);
+box(G,370,610,-4,0,341,675,hallTile); box(G,623,893,-4,0,328,738,kitchenTile);
+box(G,920,1212,-4,0,-132,523,concrete);
+// fundering (betonbalk 35x40) als plint
+box(G,-4,1234,-95,-4,-154,769,M(0x7b7770));
+// gevels
+wall(G,0,920,0,27,0,275,brick,[[82,274,0,215],[586,842,0,215]]);
+wall(G,0,27,27,648,0,275,brick,[[112,323,85,215]]);
+wall(G,0,370,648,675,0,275,brick,[[73,334,85,215]]);
+wall(G,370,596,648,675,0,275,brick,[[385,585,0,225]]);
+wall(G,596,623,648,765,0,275,brick);
+wall(G,623,920,738,765,0,275,brick,[[640,873,90,215]]);
+wall(G,893,920,27,738,0,275,brick,[[330,410,0,210]],false);
+box(G,350,384,0,240,675,765,brick); // bergkast bij voordeur
+// binnenwanden
+wall(G,357,370,341,648,0,242,plaster);
+wall(G,357,623,328,341,0,242,plaster,[[510,595,0,205]],false);
+wall(G,370,505,430,440,0,242,plaster);
+wall(G,505,512,341,430,0,242,plaster,[[350,420,0,205]],false);
+wall(G,610,623,341,648,0,242,plaster,[[400,480,0,205]],false);
+box(G,623,660,0,220,540,628,plaster); // meterkast
+// open haard / schoorsteen tot +8.60
+box(G,318,388,0,860,290,345,chimneyM);
+box(G,312,394,850,862,284,351,M(0x5e3527));
+// inrichting begane grond
+box(FG,40,125,0,42,380,610,sofa); box(FG,40,72,42,85,380,610,sofa);
+box(FG,170,250,0,40,430,540,darkWood);
+box(FG,445,585,70,75,105,195,darkWood); box(FG,505,525,0,70,140,160,darkWood);
+box(FG,815,893,0,90,420,640,counter); box(FG,640,893,0,90,680,738,counter); box(FG,705,840,0,90,298,326,counter);
+box(FG,395,440,0,42,350,400,white); // wc
+// spiltrap (Vliso)
+const stairs=new THREE.Group(); house.add(stairs);
+(function(){
+  const cx=457,cz=548,steps=14,rise=275/steps;
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(4,4,275,10),rail); pole.position.set(cx,137.5,cz); pole.castShadow=true; stairs.add(pole);
+  for(let i=0;i<steps;i++){
+    const a=-Math.PI*0.15+i*(Math.PI*1.55/steps);
+    const st=new THREE.Mesh(new THREE.BoxGeometry(82,4,24),darkWood);
+    st.position.set(cx+Math.cos(a)*43,rise*(i+1)-2,cz-Math.sin(a)*43); st.rotation.y=a;
+    st.castShadow=st.receiveShadow=true; stairs.add(st);
+  }
+})();
+
+/* ---------- GARAGE / BERGING ---------- */
+wall(G,893,920,-150,0,0,270,brick,[[-120,-40,0,210]]);
+wall(G,893,1230,-150,-132,0,270,brick,[[990,1120,85,210]]);
+wall(G,1212,1230,-132,550,0,270,brick);
+wall(G,920,1212,523,550,0,270,brick,[[965,1180,0,215]],false);
+box(G,965,1180,0,215,532,540,garageDoor);
+for(let y=36;y<215;y+=36) box(G,965,1180,y-1,y+1,540,541,rail,false);
+box(G,880,1242,242,272,-162,562,flat); box(G,880,1242,272,282,-162,-152,flat); box(G,880,1242,272,282,552,562,flat); box(G,1232,1242,272,282,-162,562,flat);
+
+/* ---------- VERDIEPING ---------- */
+box(U,0,920,242,275,0,440,slabM); box(U,0,372,242,275,440,675,slabM);
+box(U,545,920,242,275,440,675,slabM); box(U,372,545,242,275,648,675,slabM); box(U,596,920,242,275,675,765,slabM);
+box(U,372,611,275,276.5,27,300,bathTile);
+wall(U,27,893,0,27,275,545,brick,[[84,283,90,210],[380,506,130,210],[629,840,90,210]]);
+wall(U,27,596,648,675,275,545,brick,[[72,333,90,210],[451,544,90,210]]);
+wall(U,623,893,738,765,275,482,brick);
+gable(U,596,[[648,275],[765,275],[765,482],[648,563]]);
+gable(U,0,[[0,275],[675,275],[675,545],[337.5,780],[0,545]]);
+gable(U,893,[[0,275],[765,275],[765,482],[337.5,780],[0,545]],[[384,485,275,485]]);
+pane(U,false,384,485,275,485,906.5);
+wall(U,360,372,27,648,275,515,plaster,[[345,425,0,205]],false);
+wall(U,611,623,27,648,275,515,plaster,[[240,315,0,205],[355,435,0,205]],false);
+wall(U,372,611,300,310,275,515,plaster,[[535,600,0,205]],false);
+wall(U,623,893,335,345,275,515,plaster);
+box(U,320,390,275,515,295,340,plaster); // ventilatiekanaal
+box(U,372,545,275,375,440,444,rail); box(U,541,545,275,375,444,648,rail);
+// inrichting verdieping
+box(FU,50,250,275,322,390,530,bed); box(FU,50,250,322,326,440,530,quilt); box(FU,55,245,322,332,395,428,white);
+box(FU,30,92,275,480,75,255,wardrobe);
+box(FU,800,890,275,322,110,310,bed); box(FU,800,890,322,326,170,310,quilt); box(FU,805,885,322,332,115,145,white);
+box(FU,623,680,275,480,130,210,wardrobe);
+box(FU,690,850,275,322,520,728,bed); box(FU,690,850,322,326,580,728,quilt); box(FU,695,845,322,332,525,557,white);
+box(FU,712,802,275,480,348,400,wardrobe);
+box(FU,376,450,275,330,30,200,white); box(FU,540,600,355,365,30,75,white);
+
+/* ---------- DAK ---------- */
+box(R,27,893,515,530,27,648,plaster);
+function slope(z0,z1,front){
+  const run=Math.abs(z1-z0), L=run/Math.cos(theta), T=14;
+  const zc=(z0+z1)/2, yc=780-k*Math.abs(337.5-zc);
+  const tex=gridTex('#4b4645','#3a3534',0,true); tex.repeat.set(990/32,L/34);
+  const mat=M(0xffffff,{map:tex,roughness:.8});
+  const m=box(R,-30,960,-T/2,T/2,-L/2,L/2,mat);
+  const a=front?theta:-theta; m.rotation.x=a;
+  m.position.set(465,yc+Math.cos(theta)*T/2,zc+(front?1:-1)*Math.sin(theta)*T/2);
+}
+slope(-45,337.5,false); slope(337.5,790,true);
+box(R,-34,964,778,796,330,345,M(0x2e2a29));
+// goot
+box(R,-30,960,452,468,782,796,M(0xd9d9d4));
+box(R,-30,960,500,514,-52,-38,M(0xd9d9d4));
+// ventilatierooster in de gevels
+box(R,-1,1,640,690,320,355,rail); box(R,919,921,640,690,320,355,rail);
+
+/* ---------- TERREIN ---------- */
+const grass=new THREE.Mesh(new THREE.CircleGeometry(4200,64),S(0x7f9a6a));
+grass.rotation.x=-Math.PI/2; grass.position.set(615,-2,400); grass.receiveShadow=true; SITE.add(grass);
+const pav='#c9c5bc', pavl='#ada89c';
+box(SITE,80,893,-2,0.6,-150,0,tiledMat(pav,pavl,16,3,true),false);
+box(SITE,370,596,-2,0.6,765,1050,tiledMat(pav,pavl,5,6,true),false);
+box(SITE,960,1185,-2,0.6,550,1050,tiledMat('#bdb8ad','#a29c8f',4,9,true),false);
+box(SITE,-500,1800,-2,1.5,1050,1150,S(0xbcb8ae),false);
+box(SITE,-500,1800,-3,0.2,1150,1500,S(0x4d5153),false);
+function tree(x,z,r,h){
+  const t=new THREE.Mesh(new THREE.CylinderGeometry(10,14,h,8),S(0x6b513b));t.position.set(x,h/2,z);t.castShadow=true;SITE.add(t);
+  const c=new THREE.Mesh(new THREE.IcosahedronGeometry(r,1),S(0x5c7a4c,{flatShading:true}));c.position.set(x,h+r*.7,z);c.castShadow=true;SITE.add(c);
+}
+tree(-260,-520,190,260); tree(420,-760,150,230); tree(1520,-300,160,240); tree(-380,820,120,180);
+
+/* ---------- labels ---------- */
+const L=[
+  {t:'Woonkamer',lv:'bg',p:[190,30,500]},{t:'Eethoek',lv:'bg',p:[520,30,240]},{t:'Keuken',lv:'bg',p:[740,30,540]},
+  {t:'Hal',lv:'bg',p:[560,30,600]},{t:'W.C.',lv:'bg',p:[440,30,385]},{t:'Berging / garage',lv:'bg',p:[1065,30,200]},
+  {t:'Terras',lv:'bg',p:[480,5,-80]},
+  {t:'Slaapkamer',lv:'ver',p:[200,290,250]},{t:'Badkamer',lv:'ver',p:[490,290,160]},{t:'Overloop',lv:'ver',p:[490,290,380]},
+  {t:'Slaapkamer',lv:'ver',p:[740,290,240]},{t:'Slaapkamer',lv:'ver',p:[740,290,470]},{t:'Plat dak',lv:'ver',p:[1065,285,200]},
+];
+const labWrap=document.getElementById('labels');
+L.forEach(l=>{l.el=document.createElement('div');l.el.className='tag';l.el.textContent=l.t;labWrap.appendChild(l.el);});
+
+/* ---------- maatvoering (waarden uit de tekeningen, in cm) ---------- */
+const DIM={bg:new THREE.Group(),ver:new THREE.Group(),h:new THREE.Group()};
+house.add(DIM.bg,DIM.ver,DIM.h);
+const dimMat=new THREE.LineBasicMaterial({color:0x174a78,depthTest:false,transparent:true});
+const dimLabels=[];
+function lines(g,pts){const geo=new THREE.BufferGeometry().setFromPoints(pts.map(p=>new THREE.Vector3(p[0],p[1],p[2])));
+  const l=new THREE.LineSegments(geo,dimMat);l.renderOrder=20;l.frustumCulled=false;g.add(l);}
+function dimLabel(g,text,p,cls){const el=document.createElement('div');el.className='dim'+(cls?' '+cls:'');el.textContent=text;el.hidden=true;labWrap.appendChild(el);dimLabels.push({el,p,g});}
+// keten: axis 'x' loopt langs x op z=c, axis 'z' loopt langs z op x=c
+function chain(g,axis,c,y,start,vals){
+  const P=a=>axis==='x'?[a,y,c]:[c,y,a];
+  const pos=[start]; vals.forEach(v=>pos.push(pos[pos.length-1]+v));
+  const L2=[P(pos[0]),P(pos[pos.length-1])], t=10;
+  pos.forEach(a=>{
+    if(axis==='x'){L2.push([a-t,y,c+t],[a+t,y,c-t],[a,y,c-16],[a,y,c+16]);}
+    else{L2.push([c-t,y,a+t],[c+t,y,a-t],[c-16,y,a],[c+16,y,a]);}
+  });
+  lines(g,L2);
+  let small=0;
+  vals.forEach((v,i)=>{const m=(pos[i]+pos[i+1])/2; let cls=''; if(v<45){small++; if(small%2===0)cls='flip';} else small=0; dimLabel(g,String(v),P(m),cls);});
+}
+function levels(g,x,z,marks,right){
+  const ys=marks.map(m=>m[0]); lines(g,[[x,Math.min(...ys),z],[x,Math.max(...ys),z]]);
+  marks.forEach(([y,t])=>{lines(g,[[x-30,y,z],[x+30,y,z],[x-8,y+10,z],[x,y,z],[x,y,z],[x+8,y+10,z]]);dimLabel(g,t,[x,y,z],'lvl'+(right?' r':''));});
+}
+// begane grond (gelezen van de plattegrond "Beganegrond peil")
+const yb=6;
+chain(DIM.bg,'x',850,yb,0,[27,330,13,240,13,270,27]);
+chain(DIM.bg,'x',920,yb,0,[596,27,270,27,292,18]);
+chain(DIM.bg,'x',990,yb,0,[920,310]);
+chain(DIM.bg,'x',1060,yb,0,[1230]);
+chain(DIM.bg,'x',-230,yb,0,[357,13,120,10,110,23,260,9,18,292,18]);
+chain(DIM.bg,'z',-90,yb,0,[27,621,27]);
+chain(DIM.bg,'z',-170,yb,-150,[150,675,90]);
+chain(DIM.bg,'z',1310,yb,-150,[700,215]);
+chain(DIM.bg,'z',1390,yb,-150,[915]);
+// verdieping (plattegrond "Verdieping 2.75+")
+const yv=281;
+chain(DIM.ver,'x',-70,yv,0,[27,333,12,239,12,270,27]);
+chain(DIM.ver,'x',850,yv,0,[27,333,10,243,10,270,27]);
+chain(DIM.ver,'x',920,yv,0,[920]);
+chain(DIM.ver,'z',-80,yv,0,[27,304,12,303,29]);
+chain(DIM.ver,'z',-160,yv,0,[675,90]);
+chain(DIM.ver,'z',1310,yv,0,[27,308,10,393,27]);
+chain(DIM.ver,'z',1390,yv,0,[765]);
+// hoogtes (doorsneden)
+levels(DIM.h,-120,800,[[-95,'−0.95 betonbalk'],[0,'±0.00 peil'],[275,'+2.75 verdieping'],[478,'+4.78 goot'],[545,'+5.45 balklaag'],[780,'+7.80 nok'],[860,'+8.60 schoorsteen']]);
+levels(DIM.h,1330,620,[[0,'±0.00'],[270,'+2.70 plat dak']],true);
+
+/* ---------- lagen ---------- */
+const LAY={'l-dak':[R],'l-ver':[U,FU],'l-bg':[G,stairs,FG],'l-inr':[FG,FU],'l-ter':[SITE],'l-mbg':[DIM.bg],'l-mver':[DIM.ver],'l-mh':[DIM.h]};
+function applyLayers(){
+  const on=id=>document.getElementById(id).checked;
+  R.visible=on('l-dak'); U.visible=on('l-ver'); G.visible=on('l-bg'); stairs.visible=on('l-bg');
+  FG.visible=on('l-bg')&&on('l-inr'); FU.visible=on('l-ver')&&on('l-inr'); SITE.visible=on('l-ter');
+  DIM.bg.visible=on('l-mbg'); DIM.ver.visible=on('l-mver'); DIM.h.visible=on('l-mh');
+}
+Object.keys(LAY).forEach(id=>document.getElementById(id).addEventListener('change',applyLayers));
+function setDims(a,b,c){document.getElementById('l-mbg').checked=a;document.getElementById('l-mver').checked=b;document.getElementById('l-mh').checked=c;applyLayers();}
+try{ if(matchMedia('(max-width:760px)').matches) document.getElementById('layers').open=false; }catch(e){}
+function setDimColor(){const c=getComputedStyle(document.documentElement).getPropertyValue('--dim').trim();if(c)dimMat.color.set(c);}
+setDimColor();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',setDimColor);}catch(e){}
+new MutationObserver(setDimColor).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ---------- modes ---------- */
+const O=house.position;
+const MODES={
+  ext:{dims:[0,0,1],cap:'Buitenkant, gezien vanaf de straat',cam:[-11,7,14],tgt:[0,2.4,0],clip:null,hide:[],lv:['goot','nok','sch']},
+  bg:{dims:[1,0,0],cap:'Begane grond, horizontaal doorgesneden op 1,30 m boven peil',cam:[0.5,19,10],tgt:[0,0,0.8],clip:new THREE.Plane(new THREE.Vector3(0,-1,0),1.3),lv:['bg']},
+  ver:{dims:[0,1,0],cap:'Verdieping (+2.75), doorgesneden op 1,30 m boven de vloer',cam:[0.5,21,10.5],tgt:[0,2.75,0.6],clip:new THREE.Plane(new THREE.Vector3(0,-1,0),4.05),lv:['ver','gar']},
+  langs:{dims:[0,0,1],cap:'Langsdoorsnede door hal, trap en keuken, kijkend naar de achtergevel',cam:[0,4.2,15.5],tgt:[0,3.4,0],clip:new THREE.Plane(new THREE.Vector3(0,0,-1),4.7*1+O.z+0.0),lv:['bg','ver','zol','nok']},
+  dwars:{dims:[0,0,1],cap:'Dwarsdoorsnede door eethoek en keuken: pannendak, balklaag en systeemvloeren',cam:[-15.5,4.2,0.8],tgt:[0,3.4,0.4],clip:new THREE.Plane(new THREE.Vector3(1,0,0),-(5.5+O.x)),lv:['bg','ver','goot','zol','nok']},
+};
+let mode='ext', showLabels=true, rotating=true, tween=null;
+const btns=[...document.querySelectorAll('.modes button')];
+function setMode(m,instant){
+  mode=m; const c=MODES[m];
+  btns.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));
+  document.getElementById('caption').textContent=c.cap;
+  houseMats.forEach(mt=>{mt.clippingPlanes=c.clip?[c.clip]:[];mt.needsUpdate=true;});
+  document.querySelectorAll('#levels li').forEach(li=>li.classList.toggle('on',c.lv.includes(li.dataset.k)));
+  controls.autoRotate=rotating&&m==='ext';
+  setDims(!!c.dims[0],!!c.dims[1],!!c.dims[2]);
+  flyTo(c.cam,c.tgt,instant);
+}
+function flyTo(p,t,instant){
+  const to={p:new THREE.Vector3(...p),t:new THREE.Vector3(...t)};
+  if(instant||matchMedia('(prefers-reduced-motion: reduce)').matches){camera.position.copy(to.p);controls.target.copy(to.t);tween=null;return;}
+  tween={from:{p:camera.position.clone(),t:controls.target.clone()},to,start:performance.now(),dur:1100};
+}
+btns.forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+const tRot=document.getElementById('t-rot'), tLab=document.getElementById('t-lab');
+tRot.addEventListener('click',()=>{rotating=!rotating;tRot.setAttribute('aria-pressed',String(rotating));controls.autoRotate=rotating&&mode==='ext';});
+tLab.addEventListener('click',()=>{showLabels=!showLabels;tLab.setAttribute('aria-pressed',String(showLabels));});
+document.getElementById('t-reset').addEventListener('click',()=>setMode(mode));
+controls.addEventListener('start',()=>{tween=null;});
+
+/* ---------- loop ---------- */
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;
+  camera.fov=w<600?50:38;camera.updateProjectionMatrix();}
+window.addEventListener('resize',resize); resize();
+const v=new THREE.Vector3();
+function tick(now){
+  if(tween){
+    let x=Math.min(1,(now-tween.start)/tween.dur); const e=x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+    camera.position.lerpVectors(tween.from.p,tween.to.p,e); controls.target.lerpVectors(tween.from.t,tween.to.t,e);
+    if(x>=1)tween=null;
+  }
+  controls.update();
+  renderer.render(scene,camera);
+  const W=stage.clientWidth,H=stage.clientHeight;
+  L.forEach(l=>{
+    const on=showLabels&&l.lv===mode;
+    if(!on){l.el.hidden=true;return;}
+    v.set(l.p[0]*.01+O.x,l.p[1]*.01,l.p[2]*.01+O.z).project(camera);
+    if(v.z>1){l.el.hidden=true;return;}
+    l.el.hidden=false; l.el.style.left=((v.x+1)/2*W)+'px'; l.el.style.top=((1-v.y)/2*H)+'px';
+  });
+  dimLabels.forEach(d=>{
+    if(!d.g.visible){d.el.hidden=true;return;}
+    v.set(d.p[0]*.01+O.x,d.p[1]*.01,d.p[2]*.01+O.z).project(camera);
+    if(v.z>1||Math.abs(v.x)>1.1||Math.abs(v.y)>1.1){d.el.hidden=true;return;}
+    d.el.hidden=false; d.el.style.left=((v.x+1)/2*W)+'px'; d.el.style.top=((1-v.y)/2*H)+'px';
+  });
+  requestAnimationFrame(tick);
+}
+setMode('ext',true);
+requestAnimationFrame(tick);
+})();
+</script>
+
+</body></html>
