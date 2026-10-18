@@ -1,0 +1,486 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kia PV5 Cargo L2H2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: full-bleed 3D stage, spec sheet docked right (bottom on phones), view switcher floating over the stage */
+:root{
+  --stage:#d9dcdf; --panel:#f3f4f5; --ink:#17191c; --muted:#5d636b; --rule:#c4c8cd;
+  --accent:#c2410c; --cargo:#2563eb; --wheel:#0f766e; --open:#7c3aed; --hook:#a16207;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --stage:#1d2024; --panel:#141619; --ink:#e8eaed; --muted:#9aa1aa; --rule:#30353b;
+  --accent:#fb923c; --cargo:#60a5fa; --wheel:#2dd4bf; --open:#a78bfa; --hook:#facc15; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --stage:#1d2024; --panel:#141619; --ink:#e8eaed; --muted:#9aa1aa; --rule:#30353b;
+  --accent:#fb923c; --cargo:#60a5fa; --wheel:#2dd4bf; --open:#a78bfa; --hook:#facc15; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--panel);color:var(--ink);font-family:var(--f-display);overflow:hidden}
+.app{height:100%;display:grid;grid-template-columns:1fr 300px}
+.stage{position:relative;background:var(--stage);min-width:0;overflow:hidden}
+canvas{display:block;width:100%;height:100%;outline:none}
+.labels{position:absolute;inset:0;pointer-events:none}
+.lbl{position:absolute;transform:translate(-50%,-50%);font:500 12px/1 var(--f-mono);font-variant-numeric:tabular-nums;
+  padding:3px 6px;border-radius:3px;background:var(--panel);color:var(--c);border:1px solid var(--c);white-space:nowrap}
+.head{position:absolute;top:14px;left:max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+.head h1{margin:0;font-weight:800;font-stretch:75%;font-size:30px;letter-spacing:.01em;line-height:1;text-wrap:balance}
+.head p{margin:4px 0 0;font:400 12px var(--f-mono);color:var(--muted)}
+.bar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-wrap:wrap;gap:6px;justify-content:center;width:max-content;max-width:calc(100% - 32px)}
+.seg{display:flex;background:var(--panel);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.seg button{font:600 13px var(--f-display);font-stretch:85%;letter-spacing:.03em;text-transform:uppercase;
+  border:0;background:none;color:var(--ink);padding:8px 11px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+aside{border-left:1px solid var(--rule);overflow-y:auto;padding-block:20px;padding-left:20px;padding-right:max(20px,env(safe-area-inset-right,0px))}
+aside h2{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+aside section+section{margin-top:22px}
+dl{margin:0;display:grid;grid-template-columns:1fr auto;font-size:14px}
+dt,dd{padding:7px 0;border-bottom:1px solid var(--rule);margin:0}
+dd{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+dd.est::after{content:" ≈";color:var(--muted)}
+.key{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:0}
+.layers{display:grid;gap:2px}
+.layer{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;border:1px solid transparent}
+.layer:hover{border-color:var(--rule)}
+.layer input{appearance:none;margin:0;width:16px;height:16px;border-radius:3px;border:2px solid var(--c);display:grid;place-items:center;cursor:pointer}
+.layer input:checked{background:var(--c)}
+.layer input:checked::after{content:"";width:6px;height:3px;border:solid var(--panel);border-width:0 0 2px 2px;transform:translateY(-1px) rotate(-45deg)}
+.layer input:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.layer span{font-weight:600;font-size:14px}
+.layer small{font:400 11px var(--f-mono);color:var(--muted)}
+.layer-actions{display:flex;gap:12px;margin-top:6px}
+.layer-actions button{font:500 11.5px var(--f-mono);background:none;border:0;padding:4px 0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.layer-actions button:hover{color:var(--ink)}
+.app.noinfo{grid-template-columns:1fr}
+.app.noinfo aside{display:none}
+@media (max-width:760px){.app.noinfo{grid-template-rows:1fr}}
+.lhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.lhead h2{margin:0}
+.infobtn{display:inline-flex;align-items:center;gap:8px;font:600 12px var(--f-display);letter-spacing:.08em;text-transform:uppercase;
+  background:none;border:1px solid var(--rule);border-radius:999px;padding:4px 10px 4px 5px;color:var(--muted);cursor:pointer}
+.infobtn .sw{width:24px;height:14px;border-radius:7px;background:var(--rule);position:relative;transition:background .15s}
+.infobtn .sw::after{content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:var(--panel);transition:transform .15s}
+.infobtn[aria-pressed="true"]{color:var(--ink)}
+.infobtn[aria-pressed="true"] .sw{background:var(--ink)}
+.infobtn[aria-pressed="true"] .sw::after{transform:translateX(10px)}
+.infobtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.info-empty{font:400 12px/1.5 var(--f-mono);color:var(--muted);margin:18px 0 0}
+@media (prefers-reduced-motion:reduce){.infobtn .sw,.infobtn .sw::after{transition:none}}
+.note{font:400 11.5px/1.5 var(--f-mono);color:var(--muted);margin:14px 0 0;max-width:60ch}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr;grid-template-rows:62% 38%}
+  aside{border-left:0;border-top:1px solid var(--rule);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .head h1{font-size:24px}
+  .seg button{padding:7px 8px;font-size:12px}
+}
+</style>
+
+<div class="app" id="app">
+  <div class="stage" id="stage">
+    <canvas id="c" tabindex="0" aria-label="3D-model van de Kia PV5 Cargo"></canvas>
+    <div class="labels" id="labels"></div>
+    <div class="head"><h1>PV5 Cargo · L2H2</h1><p>hoog dak · maten in mm · sleep om te draaien</p></div>
+    <div class="bar">
+      <div class="seg" role="group" aria-label="Aanzicht">
+        <button id="v-3d" aria-pressed="true">3D</button>
+        <button id="v-side" aria-pressed="false">Zij</button>
+        <button id="v-front" aria-pressed="false">Voor</button>
+        <button id="v-rear" aria-pressed="false">Achter</button>
+        <button id="v-top" aria-pressed="false">Boven</button>
+      </div>
+      <div class="seg" role="group" aria-label="Weergave">
+        <button id="t-cargo" aria-pressed="false">Laadruimte</button>
+        <button id="t-dims" aria-pressed="true">Maten</button>
+        <button id="t-info" aria-pressed="true">Info</button>
+      </div>
+    </div>
+  </div>
+  <aside>
+    <section>
+      <div class="lhead"><h2>Maatlagen</h2><button id="info-close" class="infobtn" title="Zijbalk inklappen">Inklappen ›</button></div>
+      <div class="layers" id="layers">
+        <label class="layer" style="--c:var(--accent)"><input type="checkbox" id="L-ext" checked><span>Hoofdmaten</span><small>4</small></label>
+        <label class="layer" style="--c:var(--wheel)"><input type="checkbox" id="L-wheel"><span>Wielen &amp; overhang</span><small>4</small></label>
+        <label class="layer" style="--c:var(--cargo)"><input type="checkbox" id="L-cargo"><span>Laadruimte</span><small>5</small></label>
+        <label class="layer" style="--c:var(--open)"><input type="checkbox" id="L-open"><span>Deuropeningen</span><small>3</small></label>
+        <label class="layer" style="--c:var(--hook)"><input type="checkbox" id="L-hook"><span>Sjorogen vloer</span><small>8</small></label>
+      </div>
+      <div class="layer-actions"><button id="all-on">Alles aan</button><button id="all-off">Alles uit</button></div>
+    </section>
+    <section class="info" data-layer="ext">
+      <h2><span class="key" style="background:var(--accent)"></span>Buitenmaten</h2>
+      <dl>
+        <dt>Lengte</dt><dd>4.695</dd>
+        <dt>Breedte (excl. spiegels)</dt><dd>1.895</dd>
+        <dt>Hoogte</dt><dd>2.200</dd>
+        <dt>Wielbasis</dt><dd>2.995</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="wheel">
+      <h2><span class="key" style="background:var(--wheel)"></span>Wielen &amp; overhang</h2>
+      <dl>
+        <dt>Overhang voor</dt><dd class="est">900</dd>
+        <dt>Overhang achter</dt><dd class="est">800</dd>
+        <dt>Spoorbreedte</dt><dd class="est">1.620</dd>
+        <dt>Wieldiameter (16″)</dt><dd class="est">Ø 690</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="cargo">
+      <h2><span class="key" style="background:var(--cargo)"></span>Laadruimte</h2>
+      <dl>
+        <dt>Laadlengte vloer</dt><dd>2.255</dd>
+        <dt>Laadbreedte max.</dt><dd>1.565</dd>
+        <dt>Tussen wielkasten</dt><dd>1.330</dd>
+        <dt>Laadhoogte</dt><dd>1.815</dd>
+        <dt>Volume</dt><dd>5,2 m³</dd>
+        <dt>Vloerhoogte</dt><dd class="est">420</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="open">
+      <h2><span class="key" style="background:var(--open)"></span>Deuropeningen</h2>
+      <dl>
+        <dt>Achteropening breed</dt><dd>1.343</dd>
+        <dt>Schuifdeur links</dt><dd>775</dd>
+        <dt>Schuifdeur rechts</dt><dd>775</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="hook">
+      <h2><span class="key" style="background:var(--hook)"></span>Sjorogen vloer</h2>
+      <dl>
+        <dt>Rij 1 · vanaf schot</dt><dd class="est">40 · h.o.h. 1.020</dd>
+        <dt>Rij 2 · vanaf schot</dt><dd class="est">930 · h.o.h. 1.094</dd>
+        <dt>Rij 3 · vanaf schot</dt><dd class="est">1.320 · h.o.h. 670</dd>
+        <dt>Rij 4 · vanaf schot</dt><dd class="est">2.010 · h.o.h. 780</dd>
+        <dt>Schroefpunten (●)</dt><dd class="est">10</dd>
+      </dl>
+    </section>
+    <p class="info-empty" id="info-empty" hidden>Zet een maatlaag aan om hier de maten te zien.</p>
+    <p class="note info" id="info-note">Maten volgens Kia-opgaven voor de L2H2. Waarden met ≈ zijn geschat uit de foto's; hoogte en vorm van de wielkasten in de laadruimte zijn benaderd. De carrosserie is een vereenvoudigd model, de maatvoering is op schaal.</p>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const mm = v => v/1000;
+// --- Dimensions (metres) ---
+const L=mm(4695), W=mm(1895), H=mm(2200), WB=mm(2995);
+const XF=mm(900), XR=XF+WB;              // axle positions from nose
+const TR=mm(345), TW=mm(215), TRACK=mm(1620);
+const CL=mm(2255), CW=mm(1565), CWA=mm(1330), CH=mm(1815), FLOOR=mm(420);
+const CX1=L-mm(70), CX0=CX1-CL;          // cargo box along x
+
+const stage=document.getElementById('stage'), canvas=document.getElementById('c'), labelsEl=document.getElementById('labels');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputEncoding=THREE.sRGBEncoding;
+const scene=new THREE.Scene();
+
+const persp=new THREE.PerspectiveCamera(35,1,0.05,100);
+const ortho=new THREE.OrthographicCamera(-1,1,1,-1,0.05,100);
+let cam=persp;
+const controls=new THREE.OrbitControls(persp,canvas);
+controls.enableDamping=true; controls.target.set(0,1.0,0);
+controls.maxPolarAngle=Math.PI/2-0.02; controls.minDistance=2.5; controls.maxDistance=20;
+
+// --- Lights ---
+scene.add(new THREE.HemisphereLight(0xffffff,0x8a8f96,0.75));
+const sun=new THREE.DirectionalLight(0xffffff,0.85);
+sun.position.set(-4,8,6); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-5,right:5,top:5,bottom:-5,near:1,far:25});
+scene.add(sun);
+const fill=new THREE.DirectionalLight(0xffffff,0.35); fill.position.set(6,3,-5); scene.add(fill);
+
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),new THREE.ShadowMaterial({opacity:0.22}));
+ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
+const grid=new THREE.GridHelper(12,24,0x000000,0x000000);
+grid.material.transparent=true; grid.material.opacity=0.07; scene.add(grid);
+
+// --- Materials ---
+const paint=new THREE.MeshStandardMaterial({color:0x8d9196,roughness:0.55,metalness:0.25,transparent:true});
+const black=new THREE.MeshStandardMaterial({color:0x1b1d20,roughness:0.75,metalness:0.05,transparent:true});
+const gloss=new THREE.MeshStandardMaterial({color:0x0c0d0f,roughness:0.15,metalness:0.4,transparent:true});
+const glass=new THREE.MeshStandardMaterial({color:0x101317,roughness:0.08,metalness:0.6,transparent:true,side:THREE.DoubleSide});
+const lightMat=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xdfe8ff,emissiveIntensity:0.9});
+const redMat=new THREE.MeshStandardMaterial({color:0x7a0d12,emissive:0x5a0508,roughness:0.3});
+const tyre=new THREE.MeshStandardMaterial({color:0x141414,roughness:0.9});
+const rim=new THREE.MeshStandardMaterial({color:0x26282b,roughness:0.4,metalness:0.6});
+const rimHi=new THREE.MeshStandardMaterial({color:0xb9bec4,roughness:0.3,metalness:0.8});
+
+const van=new THREE.Group(); van.position.x=-L/2; scene.add(van);
+const bodyParts=[];  // meshes that fade in cargo mode
+function add(mesh,fade=true,parent=van){mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);if(fade)bodyParts.push(mesh);return mesh}
+
+// --- Body: extruded side profile ---
+const BOT=mm(360), AR=mm(440), AY=TR;
+function archPts(cx){const pts=[],a0=Math.asin((BOT-AY)/AR);
+  for(let i=0;i<=24;i++){const t=a0+(Math.PI-2*a0)*i/24;pts.push([cx+AR*Math.cos(t),AY+AR*Math.sin(t)])}return pts}
+const prof=[[0.06,BOT],[0.015,0.46],[0,0.60],[0,0.86],[0.03,0.99],[0.10,1.08],[0.25,1.16],[0.42,1.22],
+  [1.00,1.97],[1.08,2.06],[1.20,2.12],[1.38,2.15],[L-0.18,2.15],[L-0.08,2.12],[L-0.02,2.05],[L,1.95],
+  [L,0.60],[L-0.015,0.46],[L-0.06,BOT],
+  ...archPts(XR),...archPts(XF)];
+const shape=new THREE.Shape(); prof.forEach(([x,y],i)=>i?shape.lineTo(x,y):shape.moveTo(x,y));
+const bev=0.045;
+const bodyGeo=new THREE.ExtrudeGeometry(shape,{depth:W-2*bev,bevelEnabled:true,bevelThickness:bev,bevelSize:bev,bevelOffset:-bev,bevelSegments:4,curveSegments:8});
+bodyGeo.translate(0,0,-(W-2*bev)/2);
+add(new THREE.Mesh(bodyGeo,paint));
+
+// side details on both flanks
+for(const s of [1,-1]){
+  const z=s*(W/2+0.003);
+  // front door glass
+  const g=new THREE.Shape([[0.72,1.14],[2.04,1.14],[2.04,1.86],[1.22,1.86],[0.72,1.36]].map(p=>new THREE.Vector2(...p)));
+  const gm=add(new THREE.Mesh(new THREE.ShapeGeometry(g),glass)); gm.position.z=z;
+  // A-pillar black band
+  const ap=new THREE.Shape([[0.42,1.22],[0.72,1.14],[0.72,1.36],[1.22,1.86],[2.04,1.86],[2.12,1.86],[2.12,1.97],[1.00,1.97]].map(p=>new THREE.Vector2(...p)));
+  const apm=add(new THREE.Mesh(new THREE.ShapeGeometry(ap),gloss)); apm.position.z=z-s*0.0005;
+  // panel seams
+  for(const x of [2.16,3.62]){const sm=add(new THREE.Mesh(new THREE.BoxGeometry(0.008,1.55,0.004),black));sm.position.set(x,1.17,z)}
+  const rail=add(new THREE.Mesh(new THREE.BoxGeometry(1.48,0.012,0.004),black)); rail.position.set(2.89,1.42,z); // slide rail
+  const h1=add(new THREE.Mesh(new THREE.BoxGeometry(0.22,0.05,0.02),black)); h1.position.set(1.98,1.08,z);
+  const h2=add(new THREE.Mesh(new THREE.BoxGeometry(0.22,0.05,0.02),black)); h2.position.set(2.34,1.08,z);
+  // wheel arch flares
+  for(const cx of [XF,XR]){
+    const fl=add(new THREE.Mesh(new THREE.TorusGeometry(AR+0.035,0.045,8,32,Math.PI-0.08),black));
+    fl.position.set(cx,AY,s*(W/2-0.02)); fl.rotation.z=0.04; fl.scale.z=1.4;
+  }
+  // sill
+  const sill=add(new THREE.Mesh(new THREE.BoxGeometry(XR-XF-2*AR-0.04,0.16,0.05),black)); sill.position.set((XF+XR)/2,BOT+0.07,s*(W/2-0.01));
+  // mirror
+  const mr=add(new THREE.Mesh(new THREE.BoxGeometry(0.13,0.22,0.16),gloss)); mr.position.set(0.86,1.32,s*(W/2+0.1));
+  const ma=add(new THREE.Mesh(new THREE.BoxGeometry(0.08,0.04,0.12),gloss)); ma.position.set(0.88,1.28,s*(W/2+0.03));
+  // rear lamp
+  const rl=add(new THREE.Mesh(new THREE.BoxGeometry(0.03,0.62,0.07),redMat)); rl.position.set(L-0.005,1.30,s*(W/2-0.07));
+  // roof rail
+  const rr=add(new THREE.Mesh(new THREE.BoxGeometry(3.0,0.05,0.05),black)); rr.position.set(2.85,H-0.025,s*(W/2-0.13));
+}
+// windshield
+{const a=new THREE.Vector3(0.43,1.24,0),b=new THREE.Vector3(1.0,1.95,0);const len=a.distanceTo(b);
+ const ws=add(new THREE.Mesh(new THREE.PlaneGeometry(W-0.18,len),glass));
+ const n=new THREE.Vector3(-(b.y-a.y),(b.x-a.x),0).normalize();
+ ws.position.copy(a.clone().add(b).multiplyScalar(0.5)).add(n.clone().multiplyScalar(0.006));
+ ws.lookAt(ws.position.clone().add(n));}
+// front black nose band + light bar
+{const nb=add(new THREE.Mesh(new THREE.BoxGeometry(0.30,0.20,W-0.06),gloss)); nb.position.set(0.17,1.06,0); nb.rotation.z=0.42;
+ const lb=add(new THREE.Mesh(new THREE.BoxGeometry(0.02,0.02,W-0.25),lightMat)); lb.position.set(0.04,0.985,0); lb.rotation.z=0.6;
+ for(const s of [1,-1]){const v=add(new THREE.Mesh(new THREE.BoxGeometry(0.02,0.16,0.025),lightMat)); v.position.set(0.035,0.90,s*(W/2-0.06)); v.rotation.z=0.25;}}
+// bumpers
+{const fb=add(new THREE.Mesh(new THREE.BoxGeometry(0.10,0.26,W-0.02),black)); fb.position.set(0.03,0.50,0);
+ const pl=add(new THREE.Mesh(new THREE.BoxGeometry(0.01,0.11,0.52),new THREE.MeshStandardMaterial({color:0xe9eaec,roughness:0.5,transparent:true}))); pl.position.set(-0.022,0.62,0);
+ const rb=add(new THREE.Mesh(new THREE.BoxGeometry(0.10,0.24,W-0.02),black)); rb.position.set(L-0.03,0.49,0);
+ const hb=add(new THREE.Mesh(new THREE.BoxGeometry(0.03,0.04,0.30),redMat)); hb.position.set(L-0.01,H-0.10,0);
+ // rear door split + outline
+ const sp=add(new THREE.Mesh(new THREE.BoxGeometry(0.004,1.42,0.008),black)); sp.position.set(L+0.002,1.30,0);
+ for(const s of [1,-1]){const e=add(new THREE.Mesh(new THREE.BoxGeometry(0.004,1.42,0.008),black)); e.position.set(L+0.002,1.30,s*mm(1343)/2);}}
+
+// wheels (not faded)
+for(const x of [XF,XR]) for(const s of [1,-1]){
+  const w=new THREE.Group(); w.position.set(x,TR,s*TRACK/2);
+  const t=new THREE.Mesh(new THREE.CylinderGeometry(TR,TR,TW,40),tyre); t.rotation.x=Math.PI/2; t.castShadow=true; w.add(t);
+  const r=new THREE.Mesh(new THREE.CylinderGeometry(TR*0.66,TR*0.66,TW+0.01,32),rim); r.rotation.x=Math.PI/2; w.add(r);
+  for(let k=0;k<2;k++){const sp=new THREE.Mesh(new THREE.BoxGeometry(TR*1.25,0.035,0.006),rimHi);sp.position.z=s*(TW/2+0.006);sp.rotation.z=0.5+k*Math.PI/1;w.add(sp)}
+  const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,TW+0.03,6),rim); hub.rotation.x=Math.PI/2; w.add(hub);
+  van.add(w);
+}
+
+// --- Cargo volume ---
+const cargoCol=()=>getComputedStyle(document.documentElement).getPropertyValue('--cargo').trim()||'#2563eb';
+const cargo=new THREE.Group(); van.add(cargo); cargo.visible=false;
+const cargoFill=new THREE.MeshStandardMaterial({color:cargoCol(),transparent:true,opacity:0.16,depthWrite:false,side:THREE.DoubleSide});
+const cargoLine=new THREE.LineBasicMaterial({color:cargoCol()});
+function boxW(x0,x1,y0,y1,z0,z1){const g=new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0);
+  const m=new THREE.Mesh(g,cargoFill); m.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2); cargo.add(m);
+  const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),cargoLine); e.position.copy(m.position); cargo.add(e);}
+boxW(CX0,CX1,FLOOR,FLOOR+CH,-CW/2,CW/2);
+const archH=mm(280), archL=2*AR+0.06, inset=(CW-CWA)/2;
+for(const s of [1,-1]){
+  const g=new THREE.BoxGeometry(archL,archH,inset);
+  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x3a3f46,roughness:0.8}));
+  m.position.set(XR,FLOOR+archH/2,s*(CW/2-inset/2)); cargo.add(m);
+}
+const floor=new THREE.Mesh(new THREE.BoxGeometry(CL,0.02,CW),new THREE.MeshStandardMaterial({color:0x4a4f57,roughness:0.9}));
+floor.position.set((CX0+CX1)/2,FLOOR-0.01,0); cargo.add(floor);
+
+// --- Dimension layers ---
+const dims=[];
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+const LAYERS={
+  ext:{token:'--accent'}, wheel:{token:'--wheel'}, cargo:{token:'--cargo'}, open:{token:'--open'}, hook:{token:'--hook'}
+};
+for(const k in LAYERS){const g=new THREE.Group();van.add(g);LAYERS[k].group=g;
+  LAYERS[k].mat=new THREE.LineBasicMaterial({color:cssVar(LAYERS[k].token)||'#888',depthTest:false,transparent:true});}
+function dim(layer,a,b,off,label){
+  const Ly=LAYERS[layer];
+  const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),O=new THREE.Vector3(...off);
+  const A2=A.clone().add(O),B2=B.clone().add(O);
+  const dir=B2.clone().sub(A2).normalize();
+  let on=O.lengthSq()>0?O.clone().normalize():new THREE.Vector3(0,1,0);
+  if(Math.abs(on.dot(dir))>0.9) on=new THREE.Vector3(1,0,0);
+  const tick=dir.clone().add(on).normalize().multiplyScalar(0.05);
+  const pts=[A2,B2, A2.clone().sub(tick),A2.clone().add(tick), B2.clone().sub(tick),B2.clone().add(tick)];
+  if(O.lengthSq()>0){const ex=on.clone().multiplyScalar(0.06);pts.push(A,A2.clone().add(ex),B,B2.clone().add(ex))}
+  const ls=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),Ly.mat);
+  ls.renderOrder=10; Ly.group.add(ls);
+  const el=document.createElement('div'); el.className='lbl'; el.style.setProperty('--c','var('+Ly.token+')');
+  el.textContent=label; labelsEl.appendChild(el);
+  dims.push({group:Ly.group,mid:A2.clone().add(B2).multiplyScalar(0.5),el});
+}
+function outline(layer,pts){const P=pts.map(p=>new THREE.Vector3(...p));const seg=[];
+  for(let i=0;i<P.length;i++){seg.push(P[i],P[(i+1)%P.length])}
+  const ls=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(seg),LAYERS[layer].mat);ls.renderOrder=10;LAYERS[layer].group.add(ls)}
+const zs=W/2;
+// Hoofdmaten
+dim('ext',[0,0.01,zs],[L,0.01,zs],[0,0,0.55],'4.695');
+dim('ext',[XF,0.01,zs],[XR,0.01,zs],[0,0,0.28],'2.995');
+dim('ext',[L,0,-zs],[L,H,-zs],[0.45,0,0],'2.200');
+dim('ext',[0,0.01,-zs],[0,0.01,zs],[-0.45,0,0],'1.895');
+// Wielen & overhang (keten met de wielbasis)
+dim('wheel',[0,0.01,zs],[XF,0.01,zs],[0,0,0.28],'900 ≈');
+dim('wheel',[XR,0.01,zs],[L,0.01,zs],[0,0,0.28],'800 ≈');
+dim('wheel',[XF,0,TRACK/2+TW/2+0.04],[XF,2*TR,TRACK/2+TW/2+0.04],[0,0,0],'Ø 690 ≈');
+dim('wheel',[XF-TR-0.05,0.01,-TRACK/2],[XF-TR-0.05,0.01,TRACK/2],[-0.95,0,0],'spoor 1.620 ≈');
+// Laadruimte
+dim('cargo',[CX0,FLOOR+CH,0],[CX1,FLOOR+CH,0],[0,0.12,0],'2.255');
+dim('cargo',[CX1,FLOOR+CH,-CW/2],[CX1,FLOOR+CH,CW/2],[0,0.12,0],'1.565');
+dim('cargo',[CX1-0.02,FLOOR+archH+0.03,-CWA/2],[CX1-0.02,FLOOR+archH+0.03,CWA/2],[0,0,0],'1.330');
+dim('cargo',[CX1,FLOOR,CW/2],[CX1,FLOOR+CH,CW/2],[0,0,0.12],'1.815');
+dim('cargo',[L,0,zs],[L,FLOOR,zs],[0.22,0,0],'420 ≈');
+outline('cargo',[[CX0,FLOOR,-CW/2],[CX1,FLOOR,-CW/2],[CX1,FLOOR,CW/2],[CX0,FLOOR,CW/2]]);
+// Deuropeningen
+const RO=mm(1343), ROH=1.62, SD0=2.20, SD1=SD0+mm(775), SDH=1.80;
+outline('open',[[L+0.01,FLOOR,-RO/2],[L+0.01,FLOOR,RO/2],[L+0.01,FLOOR+ROH,RO/2],[L+0.01,FLOOR+ROH,-RO/2]]);
+dim('open',[L+0.01,FLOOR+ROH,-RO/2],[L+0.01,FLOOR+ROH,RO/2],[0,0.14,0],'1.343');
+// schuifdeuropening links (+z) en gespiegeld rechts (−z)
+for(const sgn of [1,-1]){const zz=sgn*(zs+0.01);
+  outline('open',[[SD0,FLOOR,zz],[SD1,FLOOR,zz],[SD1,SDH,zz],[SD0,SDH,zz]]);
+  dim('open',[SD0,SDH,zz],[SD1,SDH,zz],[0,0.14,0],'775');}
+
+// Sjorogen: posities afgeleid van het bovenaanzicht (x vanaf schot, z vanaf hartlijn; − = rechterzijde)
+const HY=FLOOR+0.004;
+const hookMat=new THREE.MeshStandardMaterial({color:cssVar('--hook')||'#a16207',roughness:0.35,metalness:0.6});
+const cupMat=new THREE.MeshStandardMaterial({color:0x111214,roughness:0.6});
+LAYERS.hook.solid=hookMat;
+const ROWS=[{dx:40,z:510},{dx:930,z:547},{dx:1320,z:335},{dx:2010,z:390}];
+for(const r of ROWS) for(const sgn of [-1,1]){
+  const g=new THREE.Group(); g.position.set(CX0+mm(r.dx),HY,sgn*mm(r.z));
+  const cup=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.006,24),cupMat); g.add(cup);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.024,0.006,8,24),hookMat); ring.rotation.x=Math.PI/2; ring.position.y=0.004; g.add(ring);
+  const loop=new THREE.Mesh(new THREE.TorusGeometry(0.02,0.005,8,16,Math.PI),hookMat); loop.rotation.y=Math.PI/4; loop.position.y=0.006; g.add(loop);
+  const halo=new THREE.Mesh(new THREE.RingGeometry(0.05,0.058,32),LAYERS.hook.mat); halo.rotation.x=-Math.PI/2; halo.position.y=0.002; g.add(halo);
+  LAYERS.hook.group.add(g);
+}
+const BOLTS=[[748,622],[735,256],[1148,264],[1836,324]];
+for(const [dx,z] of BOLTS) for(const sgn of [-1,1]){
+  const b=new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.006,16),cupMat); b.position.set(CX0+mm(dx),HY,sgn*mm(z)); LAYERS.hook.group.add(b);}
+for(const [dx,z] of [[243,0],[616,56]]){const b=new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.006,16),cupMat); b.position.set(CX0+mm(dx),HY,mm(z)); LAYERS.hook.group.add(b);}
+// maatvoering: lengte vanaf schot (rechterzijde) en hart-op-hart per rij
+ROWS.slice(1).forEach((r,i)=>dim('hook',[CX0,HY,-CW/2],[CX0+mm(r.dx),HY,-CW/2],[0,0,-0.12-0.12*i],(r.dx>=1000?(r.dx/1000).toFixed(3):r.dx)+' ≈'));
+ROWS.forEach(r=>{const v=2*r.z; dim('hook',[CX0+mm(r.dx),HY,-mm(r.z)],[CX0+mm(r.dx),HY,mm(r.z)],[0,0,0],(v>=1000?(v/1000).toFixed(3):v)+' ≈')});
+
+// --- Views ---
+const V={ '3d':{p:[5.6,3.0,6.2],o:false}, side:{p:[0,1.1,12],o:true}, front:{p:[-12,1.1,0],o:true},
+          rear:{p:[12,1.1,0],o:true}, top:{p:[0,12,0.001],o:true} };
+let anim=null;
+function setView(k){
+  document.querySelectorAll('[id^="v-"]').forEach(b=>b.setAttribute('aria-pressed',b.id==='v-'+k));
+  const v=V[k]; const target=new THREE.Vector3(0,k==='top'?0:1.05,0);
+  const next=v.o?ortho:persp;
+  if(next!==cam){next.position.copy(cam.position); next.up.set(0,1,0); cam=next; controls.object=cam;}
+  if(v.o){ortho.zoom=1; ortho.updateProjectionMatrix();}
+  controls.maxPolarAngle=k==='top'?Math.PI:Math.PI/2-0.02;
+  controls.enableRotate=!v.o;
+  anim={from:cam.position.clone(),to:new THREE.Vector3(...v.p),tf:controls.target.clone(),tt:target,t:0};
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) anim.t=1;
+}
+Object.keys(V).forEach(k=>document.getElementById('v-'+k).addEventListener('click',()=>setView(k)));
+
+function toggle(id,fn){const b=document.getElementById(id);b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);fn(on)})}
+let showDims=true, showCargo=false;
+const layerOn={ext:true,wheel:false,cargo:false,open:false,hook:false};
+try{Object.assign(layerOn,JSON.parse(localStorage.getItem('pv5-layers')||'{}'))}catch(e){}
+for(const k in layerOn){const cb=document.getElementById('L-'+k);cb.checked=!!layerOn[k];
+  cb.addEventListener('change',()=>{layerOn[k]=cb.checked;
+    if((k==='cargo'||k==='hook')&&cb.checked&&!showCargo){showCargo=true;document.getElementById('t-cargo').setAttribute('aria-pressed','true')}
+    if(cb.checked&&!showDims){showDims=true;document.getElementById('t-dims').setAttribute('aria-pressed','true')}
+    saveLayers();applyVis()})}
+function saveLayers(){try{localStorage.setItem('pv5-layers',JSON.stringify(layerOn))}catch(e){}}
+function setAll(v){for(const k in layerOn){layerOn[k]=v;document.getElementById('L-'+k).checked=v}
+  if(v){showDims=true;document.getElementById('t-dims').setAttribute('aria-pressed','true')}saveLayers();applyVis()}
+document.getElementById('all-on').addEventListener('click',()=>setAll(true));
+document.getElementById('all-off').addEventListener('click',()=>setAll(false));
+toggle('t-dims',on=>{showDims=on;applyVis()});
+toggle('t-cargo',on=>{showCargo=on;applyVis()});
+let infoOn=true;
+try{infoOn=localStorage.getItem('pv5-info')!=='0'}catch(e){}
+const infoBtn=document.getElementById('t-info'); infoBtn.setAttribute('aria-pressed',infoOn);
+function setInfo(v){infoOn=v;infoBtn.setAttribute('aria-pressed',infoOn);
+  try{localStorage.setItem('pv5-info',infoOn?'1':'0')}catch(e){}applyInfo()}
+infoBtn.addEventListener('click',()=>setInfo(!infoOn));
+document.getElementById('info-close').addEventListener('click',()=>{setInfo(false);infoBtn.focus()});
+function applyInfo(){
+  document.getElementById('app').classList.toggle('noinfo',!infoOn);
+  let any=false;
+  document.querySelectorAll('section.info[data-layer]').forEach(sec=>{
+    const on=showDims&&!!layerOn[sec.dataset.layer]; sec.hidden=!on; any=any||on});
+  document.getElementById('info-note').hidden=!any;
+  document.getElementById('info-empty').hidden=any;
+}
+function applyVis(){
+  applyInfo();
+  cargo.visible=showCargo;
+  for(const k in LAYERS) LAYERS[k].group.visible=showDims&&layerOn[k];
+  for(const m of bodyParts){m.material.opacity=showCargo?(m.material===glass?0.12:0.18):(m.material===glass?0.85:1);
+    m.material.depthWrite=!showCargo; m.castShadow=!showCargo;}
+}
+applyVis();
+
+// --- Theme ---
+function applyTheme(){
+  const bg=cssVar('--stage')||'#d9dcdf'; renderer.setClearColor(bg);
+  const dark=new THREE.Color(bg).getHSL({}).l<0.4;
+  grid.material.color.set(dark?0xffffff:0x000000); ground.material.opacity=dark?0.45:0.22;
+  for(const k in LAYERS){LAYERS[k].mat.color.set(cssVar(LAYERS[k].token));if(LAYERS[k].solid)LAYERS[k].solid.color.set(cssVar(LAYERS[k].token));}
+  cargoFill.color.set(cssVar('--cargo')); cargoLine.color.set(cssVar('--cargo'));
+}
+applyTheme();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
+new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+// --- Resize ---
+function resize(){
+  const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false);
+  persp.aspect=w/h; persp.updateProjectionMatrix();
+  const span=6.8, a=w/h; let hh=span/2/Math.min(a,1.6)*1.0; if(a<1) hh=span/2/a;
+  ortho.left=-hh*a; ortho.right=hh*a; ortho.top=hh; ortho.bottom=-hh; ortho.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage); resize();
+
+// --- Loop ---
+const tmp=new THREE.Vector3();
+persp.position.set(...V['3d'].p); controls.update();
+function loop(){
+  if(anim){anim.t=Math.min(1,anim.t+0.045); const e=1-Math.pow(1-anim.t,3);
+    cam.position.lerpVectors(anim.from,anim.to,e); controls.target.lerpVectors(anim.tf,anim.tt,e);
+    if(anim.t>=1) anim=null;}
+  controls.update(); renderer.render(scene,cam);
+  const w=stage.clientWidth,h=stage.clientHeight;
+  for(const d of dims){
+    const vis=d.group.visible; d.el.hidden=!vis; if(!vis) continue;
+    tmp.copy(d.mid); van.localToWorld(tmp); tmp.project(cam);
+    d.el.hidden=tmp.z>1;
+    d.el.style.left=((tmp.x+1)/2*w)+'px'; d.el.style.top=((1-tmp.y)/2*h)+'px';
+  }
+  requestAnimationFrame(loop);
+}
+loop();
+})();
+</script>
+
+</body></html>
