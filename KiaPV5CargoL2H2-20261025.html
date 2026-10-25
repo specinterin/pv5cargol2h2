@@ -1,0 +1,1078 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kia PV5 Cargo L2H2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: full-bleed 3D stage, spec sheet docked right (bottom on phones), view switcher floating over the stage */
+:root{
+  --stage:#d9dcdf; --panel:#f3f4f5; --ink:#17191c; --muted:#5d636b; --rule:#c4c8cd;
+  --accent:#c2410c; --cargo:#2563eb; --wheel:#0f766e; --open:#7c3aed; --hook:#a16207; --kitchen:#0e7490; --drawer:#be185d; --unit:#4d7c0f; --bed:#7c2d12; --murphy:#6d28d9; --side:#b45309;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --stage:#1d2024; --panel:#141619; --ink:#e8eaed; --muted:#9aa1aa; --rule:#30353b;
+  --accent:#fb923c; --cargo:#60a5fa; --wheel:#2dd4bf; --open:#a78bfa; --hook:#facc15; --kitchen:#22d3ee; --drawer:#f472b6; --unit:#a3e635; --bed:#fdba74; --murphy:#c4b5fd; --side:#fcd34d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --stage:#1d2024; --panel:#141619; --ink:#e8eaed; --muted:#9aa1aa; --rule:#30353b;
+  --accent:#fb923c; --cargo:#60a5fa; --wheel:#2dd4bf; --open:#a78bfa; --hook:#facc15; --kitchen:#22d3ee; --drawer:#f472b6; --unit:#a3e635; --bed:#fdba74; --murphy:#c4b5fd; --side:#fcd34d; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--panel);color:var(--ink);font-family:var(--f-display);overflow:hidden}
+.app{height:100%;display:grid;grid-template-columns:1fr 300px}
+.stage{position:relative;background:var(--stage);min-width:0;overflow:hidden}
+canvas{display:block;width:100%;height:100%;outline:none}
+.labels{position:absolute;inset:0;pointer-events:none}
+.lbl.num.pt{min-width:18px;height:18px;font-size:10.5px;background:var(--panel);color:var(--c);border:1.5px solid var(--c)}
+.lbl.num{min-width:20px;height:20px;padding:0;border-radius:50%;display:grid;place-items:center;font-weight:600;background:var(--c);color:var(--panel)}
+.lbl{position:absolute;transform:translate(-50%,-50%);font:500 12px/1 var(--f-mono);font-variant-numeric:tabular-nums;
+  padding:3px 6px;border-radius:3px;background:var(--panel);color:var(--c);border:1px solid var(--c);white-space:nowrap}
+.head{position:absolute;top:14px;left:max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+.head h1{margin:0;font-weight:800;font-stretch:75%;font-size:30px;letter-spacing:.01em;line-height:1;text-wrap:balance}
+.head p{margin:4px 0 0;font:400 12px var(--f-mono);color:var(--muted)}
+.bar{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-wrap:wrap;gap:6px;justify-content:center;width:max-content;max-width:calc(100% - 32px)}
+.seg{display:flex;flex-wrap:wrap;justify-content:center;background:var(--panel);border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.seg button{font:600 13px var(--f-display);font-stretch:85%;letter-spacing:.03em;text-transform:uppercase;
+  border:0;background:none;color:var(--ink);padding:8px 11px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+aside{border-left:1px solid var(--rule);overflow-y:auto;padding-block:20px;padding-left:20px;padding-right:max(20px,env(safe-area-inset-right,0px))}
+aside h2{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+aside section+section{margin-top:22px}
+dl{margin:0;display:grid;grid-template-columns:1fr auto;font-size:14px}
+dt,dd{padding:7px 0;border-bottom:1px solid var(--rule);margin:0}
+dd{font:500 13px var(--f-mono);font-variant-numeric:tabular-nums;text-align:right}
+dd.est::after{content:" ≈";color:var(--muted)}
+.key{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:0}
+.layers{display:grid;gap:2px}
+.layer{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;border:1px solid transparent}
+.layer:hover{border-color:var(--rule)}
+.layer input{appearance:none;margin:0;width:16px;height:16px;border-radius:3px;border:2px solid var(--c);display:grid;place-items:center;cursor:pointer}
+.layer input:checked{background:var(--c)}
+.layer input:checked::after{content:"";width:6px;height:3px;border:solid var(--panel);border-width:0 0 2px 2px;transform:translateY(-1px) rotate(-45deg)}
+.layer input:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.layer span{font-weight:600;font-size:14px}
+.layer small{font:400 11px var(--f-mono);color:var(--muted)}
+.layer-actions{display:flex;gap:12px;margin-top:6px}
+.layer-actions button{font:500 11.5px var(--f-mono);background:none;border:0;padding:4px 0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.layer-actions button:hover{color:var(--ink)}
+.app.noinfo{grid-template-columns:1fr}
+.app.noinfo aside{display:none}
+@media (max-width:760px){.app.noinfo{grid-template-rows:1fr}}
+.lhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.lhead h2{margin:0}
+.infobtn{display:inline-flex;align-items:center;gap:8px;font:600 12px var(--f-display);letter-spacing:.08em;text-transform:uppercase;
+  background:none;border:1px solid var(--rule);border-radius:999px;padding:4px 10px 4px 5px;color:var(--muted);cursor:pointer}
+.infobtn .sw{width:24px;height:14px;border-radius:7px;background:var(--rule);position:relative;transition:background .15s}
+.infobtn .sw::after{content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:var(--panel);transition:transform .15s}
+.infobtn[aria-pressed="true"]{color:var(--ink)}
+.infobtn[aria-pressed="true"] .sw{background:var(--ink)}
+.infobtn[aria-pressed="true"] .sw::after{transform:translateX(10px)}
+.infobtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.info-empty{font:400 12px/1.5 var(--f-mono);color:var(--muted);margin:18px 0 0}
+@media (prefers-reduced-motion:reduce){.infobtn .sw,.infobtn .sw::after{transition:none}}
+.note{font:400 11.5px/1.5 var(--f-mono);color:var(--muted);margin:14px 0 0;max-width:60ch}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr;grid-template-rows:62% 38%}
+  aside{border-left:0;border-top:1px solid var(--rule);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .head h1{font-size:24px}
+  .seg button{padding:7px 8px;font-size:12px}
+}
+</style>
+
+<div class="app" id="app">
+  <div class="stage" id="stage">
+    <canvas id="c" tabindex="0" aria-label="3D-model van de Kia PV5 Cargo"></canvas>
+    <div class="labels" id="labels"></div>
+    <div class="head"><h1>PV5 Cargo · L2H2</h1><p>hoog dak · maten in mm · sleep om te draaien</p></div>
+    <div class="bar">
+      <div class="seg" role="group" aria-label="Aanzicht">
+        <button id="v-3d" aria-pressed="true">3D</button>
+        <button id="v-side" aria-pressed="false">Zij</button>
+        <button id="v-front" aria-pressed="false">Voor</button>
+        <button id="v-rear" aria-pressed="false">Achter</button>
+        <button id="v-top" aria-pressed="false">Boven</button>
+      </div>
+      <div class="seg" role="group" aria-label="Weergave">
+        <button id="t-doors" aria-pressed="false">Schuifdeuren</button>
+        <button id="t-rear" aria-pressed="false">Achterdeuren</button>
+        <button id="t-pass" aria-pressed="false">Tussenschot</button>
+      </div>
+      <div class="seg" role="group" aria-label="Inrichting en weergave">
+        <button id="t-kitchen" aria-pressed="false">Keuken</button>
+        <button id="t-hob" aria-pressed="false">Kookplaat</button>
+        <button id="t-drawerL" aria-pressed="false">Zitlade L</button>
+        <button id="t-drawerR" aria-pressed="false">Zitlade R</button>
+        <button id="t-unit" aria-pressed="false">Achterkast</button>
+      </div>
+      <div class="seg" role="group" aria-label="Bed en zijkasten">
+        <button id="t-side" aria-pressed="false">Zijkasten</button>
+        <button id="t-murphy" aria-pressed="false">Klapbed</button>
+        <button id="t-foldL" aria-pressed="false" title="Linker bedhelft opklappen">Klap L</button>
+        <button id="t-foldR" aria-pressed="false" title="Rechter bedhelft opklappen">Klap R</button>
+        <button id="t-headL" aria-pressed="false" title="Linker kopdeel als kussen op de linker zijkast">Kop L</button>
+        <button id="t-headR" aria-pressed="false" title="Rechter kopdeel als kussen op de rechter zijkast">Kop R</button>
+      </div>
+      <div class="seg" role="group" aria-label="Weergave">
+        <button id="t-cargo" aria-pressed="false">Laadruimte</button>
+        <button id="t-dims" aria-pressed="false">Maten</button>
+        <button id="t-info" aria-pressed="true">Info</button>
+      </div>
+    </div>
+  </div>
+  <aside>
+    <section>
+      <div class="lhead"><h2>Maatlagen</h2><button id="info-close" class="infobtn" title="Zijbalk inklappen">Inklappen ›</button></div>
+      <div class="layers" id="layers">
+        <label class="layer" style="--c:var(--accent)"><input type="checkbox" id="L-ext" checked><span>Hoofdmaten</span><small>4</small></label>
+        <label class="layer" style="--c:var(--wheel)"><input type="checkbox" id="L-wheel"><span>Wielen &amp; overhang</span><small>4</small></label>
+        <label class="layer" style="--c:var(--cargo)"><input type="checkbox" id="L-cargo"><span>Laadruimte</span><small>5</small></label>
+        <label class="layer" style="--c:var(--open)"><input type="checkbox" id="L-open"><span>Deuropeningen</span><small>4</small></label>
+        <label class="layer" style="--c:var(--hook)"><input type="checkbox" id="L-hook"><span>Sjorogen vloer</span><small>18</small></label>
+        <label class="layer" style="--c:var(--kitchen)"><input type="checkbox" id="L-kitchen"><span>Keukenkastje</span><small>6</small></label>
+        <label class="layer" style="--c:var(--drawer)"><input type="checkbox" id="L-drawer"><span>Zitlades</span><small>8</small></label>
+        <label class="layer" style="--c:var(--unit)"><input type="checkbox" id="L-unit"><span>Achterkast</span><small>6</small></label>
+        <label class="layer" style="--c:var(--murphy)"><input type="checkbox" id="L-murphy"><span>Klapbed</span><small>7</small></label>
+        <label class="layer" style="--c:var(--side)"><input type="checkbox" id="L-side"><span>Zijkasten</span><small>6</small></label>
+      </div>
+      <div class="layer-actions"><button id="all-on">Alles aan</button><button id="all-off">Alles uit</button></div>
+    </section>
+    <section class="info" data-layer="ext">
+      <h2><span class="key" style="background:var(--accent)"></span>Buitenmaten</h2>
+      <dl>
+        <dt>Lengte</dt><dd>4.695</dd>
+        <dt>Breedte (excl. spiegels)</dt><dd>1.895</dd>
+        <dt>Hoogte</dt><dd>2.200</dd>
+        <dt>Wielbasis</dt><dd>2.995</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="wheel">
+      <h2><span class="key" style="background:var(--wheel)"></span>Wielen &amp; overhang</h2>
+      <dl>
+        <dt>Overhang voor</dt><dd class="est">900</dd>
+        <dt>Overhang achter</dt><dd class="est">800</dd>
+        <dt>Spoorbreedte</dt><dd class="est">1.620</dd>
+        <dt>Wieldiameter (16″)</dt><dd class="est">Ø 690</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="cargo">
+      <h2><span class="key" style="background:var(--cargo)"></span>Laadruimte</h2>
+      <dl>
+        <dt>Laadlengte vloer</dt><dd>2.255</dd>
+        <dt>Laadbreedte max.</dt><dd>1.565</dd>
+        <dt>Tussen wielkasten</dt><dd>1.330</dd>
+        <dt>Laadhoogte</dt><dd>1.815</dd>
+        <dt>Volume</dt><dd>5,2 m³</dd>
+        <dt>Vloerhoogte</dt><dd class="est">420</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="open">
+      <h2><span class="key" style="background:var(--open)"></span>Deuropeningen</h2>
+      <dl>
+        <dt>Achteropening breed</dt><dd>1.343</dd>
+        <dt>Schuifdeur links</dt><dd>775</dd>
+        <dt>Schuifdeur rechts</dt><dd>775</dd>
+        <dt>Schuifdeur naar buiten</dt><dd class="est">70</dd>
+        <dt>Schuifdeur naar achteren</dt><dd class="est">860</dd>
+        <dt>Achterdeuren openingshoek</dt><dd>180°</dd>
+        <dt>Tussenschot: 3 panelen</dt><dd class="est">612 breed</dd>
+        <dt>Tussenschot open breed</dt><dd class="est">1.223</dd>
+        <dt>Tussenschot open hoog</dt><dd class="est">1.635</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="hook">
+      <h2><span class="key" style="background:var(--hook)"></span>Sjorogen vloer</h2>
+      <p class="note" style="margin:0 0 6px">Per paar: afstand vanaf het schot · hart-op-hart dwars.</p>
+      <dl>
+        <dt>Oog 1 + 2</dt><dd class="est">40 · h.o.h. 1.020</dd>
+        <dt>Oog 3 + 4</dt><dd class="est">930 · h.o.h. 1.094</dd>
+        <dt>Oog 5 + 6</dt><dd class="est">1.320 · h.o.h. 670</dd>
+        <dt>Oog 7 + 8</dt><dd class="est">2.010 · h.o.h. 780</dd>
+      </dl>
+      <h2 style="margin-top:14px">Schroefpunten</h2>
+      <dl>
+        <dt>Punt 9</dt><dd class="est">243 · midden</dd>
+        <dt>Punt 10</dt><dd class="est">616 · 56 links</dd>
+        <dt>Punt 11 + 12</dt><dd class="est">735 · h.o.h. 512</dd>
+        <dt>Punt 13 + 14</dt><dd class="est">748 · h.o.h. 1.244</dd>
+        <dt>Punt 15 + 16</dt><dd class="est">1.148 · h.o.h. 528</dd>
+        <dt>Punt 17 + 18</dt><dd class="est">1.836 · h.o.h. 648</dd>
+        <dt>Nummering</dt><dd>oneven links · even rechts</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="kitchen">
+      <h2><span class="key" style="background:var(--kitchen)"></span>Keukenkastje 2020</h2>
+      <p class="note" style="margin:0 0 6px">Kastje B×L×H 650 × 350 × 600 tegen de rechterwand, achter de rechter schuifdeur. Kookplaat op een draai-arm, pen in schroefpunt 14.</p>
+      <dl>
+        <dt>Positie vanaf schot</dt><dd>78 – 728</dd>
+        <dt>Draaipen (punt 14)</dt><dd class="est">748 · 622 rechts</dd>
+        <dt>Arm pen → hart plaat</dt><dd>540</dd>
+        <dt>Zwaaihoek naar buiten</dt><dd>70°</dd>
+        <dt>Plaat buiten de bus</dt><dd class="est">≈ 380</dd>
+        <dt>Werkhoogte kookplaat</dt><dd>684 v. laadvloer</dd>
+      </dl>
+      <h2 style="margin-top:14px">Zaaglijst</h2>
+      <dl>
+        <dt>2020 staander</dt><dd>4 × 588</dd>
+        <dt>2020 ligger lengte</dt><dd>4 × 610</dd>
+        <dt>2020 ligger diepte</dt><dd>4 × 310</dd>
+        <dt>2020 draai-arm</dt><dd>1 × 700</dd>
+        <dt>Totaal 2020-profiel</dt><dd>6.732</dd>
+        <dt>Hoekverbinders</dt><dd>16 st.</dd>
+        <dt>Blad multiplex 12 mm</dt><dd>650 × 350</dd>
+        <dt>Aluplaat 4 mm (kookplaat)</dt><dd>340 × 340</dd>
+        <dt>Pen Ø20 (rvs)</dt><dd>1 × 640</dd>
+        <dt>Lagerblokken pen</dt><dd>2 st.</dd>
+        <dt>Inductieplaat</dt><dd>320 × 320 × 60</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="drawer">
+      <h2><span class="key" style="background:var(--drawer)"></span>Zitlades 2040 / 2020</h2>
+      <p class="note" style="margin:0 0 6px">Twee losse blokken van 400 breed tegen de wielkasten, met een gangpad ertussen. Uit elk blok schuift een zitplank van 100 hoog over de vloer 600 naar achteren, om vanaf buiten op te zitten.</p>
+      <dl>
+        <dt>Per blok L × B × H</dt><dd>1.020 × 400 × 138</dd>
+        <dt>Gangpad tussen blokken</dt><dd>530</dd>
+        <dt>Positie vanaf schot</dt><dd>1.270 – 2.290</dd>
+        <dt>Zitlade L × B × H</dt><dd>980 × 350 × 100</dd>
+        <dt>Uitschuif naar achteren</dt><dd>600</dd>
+        <dt>Plank buiten de bus</dt><dd class="est">≈ 600, over de bumper</dd>
+        <dt>Staat over sjoroog</dt><dd>7 en 8</dd>
+      </dl>
+      <h2 style="margin-top:14px">Zaaglijst (2 blokken)</h2>
+      <dl>
+        <dt>2040 onderligger (staand)</dt><dd>4 × 1.020</dd>
+        <dt>2020 bovenligger</dt><dd>4 × 1.020</dd>
+        <dt>2020 post</dt><dd>12 × 60</dd>
+        <dt>2020 dwarsligger</dt><dd>6 × 360</dd>
+        <dt>Totaal 2040 / 2020</dt><dd>4.080 / 6.960</dd>
+        <dt>Hoekverbinders</dt><dd>36 st.</dd>
+        <dt>Blad multiplex 18 mm</dt><dd>2 × 1.020 × 400</dd>
+        <dt>Zitplank 18 mm</dt><dd>2 × 980 × 350</dd>
+        <dt>Ladebodem 12 mm</dt><dd>2 × 980 × 350</dd>
+        <dt>Front 18 mm</dt><dd>2 × 400 × 100</dd>
+        <dt>PTFE-glijders</dt><dd>16 st.</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="unit">
+      <h2><span class="key" style="background:var(--unit)"></span>Achterkast 2020</h2>
+      <p class="note" style="margin:0 0 6px">Losse, vrijstaande unit tegen de achterdeuren. De voet staat in het gangpad tussen de zitlades. Boven de wielkasten (vanaf 400) loopt hij over de volle laadbreedte. Daaronder hangen vleugels boven de zitlades, en die schuiven er vrij onderdoor.</p>
+      <dl>
+        <dt>Totaal B × D × H</dt><dd>1.555 × 400 × 600</dd>
+        <dt>Positie vanaf schot</dt><dd>1.890 – 2.290</dd>
+        <dt>Voet in gangpad (breed)</dt><dd>510</dd>
+        <dt>Speling naar zitlades</dt><dd>10 per kant</dd>
+        <dt>Vleugels boven zitlades</dt><dd>vanaf 160</dd>
+        <dt>Bovenvak volle breedte</dt><dd>400 – 600</dd>
+      </dl>
+      <h2 style="margin-top:14px">Zaaglijst 2020</h2>
+      <dl>
+        <dt>Ligger breedte</dt><dd>4 × 1.555</dd>
+        <dt>Voetpost</dt><dd>4 × 400</dd>
+        <dt>Vleugelligger</dt><dd>4 × 400</dd>
+        <dt>Vleugelpost</dt><dd>4 × 220</dd>
+        <dt>Diepteligger</dt><dd>8 × 360</dd>
+        <dt>Post bovenvak</dt><dd>8 × 142</dd>
+        <dt>Dwarsligger voet</dt><dd>2 × 470</dd>
+        <dt>Totaal 2020-profiel</dt><dd>15.256</dd>
+        <dt>Hoekverbinders</dt><dd>± 48 st.</dd>
+        <dt>Blad multiplex 18 mm</dt><dd>1.555 × 400</dd>
+        <dt>Legborden 12 mm</dt><dd>1.555 × 400 · 2 × 400 × 400 · 470 × 360</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="murphy">
+      <h2><span class="key" style="background:var(--murphy)"></span>Klapbed (optioneel)</h2>
+      <p class="note" style="margin:0 0 6px">Alternatief voor het vaste bedframe. Over de lengte in twee helften gedeeld, samen zo breed als de laadruimte. Elke helft scharniert aan een 2020-wandrail en klapt als murphy bed omhoog tegen de zijwand, met het frame tegen de wand en de matras naar binnen.</p>
+      <dl>
+        <dt>Per helft B × L</dt><dd>775 × (400 + 1.500)</dd>
+        <dt>Samen breed</dt><dd>1.555</dd>
+        <dt>Matras per helft</dt><dd>700 × (400 + 1.500) × 80</dd>
+        <dt>Kopdeel los</dt><dd>als kussen op zijkast</dd>
+        <dt>Bovenkant matras</dt><dd>794 v. laadvloer</dd>
+        <dt>Opgeklapt: diepte / top</dt><dd>104 / 1.466</dd>
+        <dt>Wandrail (achter schuifdeur)</dt><dd>790 – 2.290</dd>
+        <dt>Losse middenpoten</dt><dd>800 en 1.860</dd>
+      </dl>
+      <h2 style="margin-top:14px">Zaaglijst</h2>
+      <dl>
+        <dt>2020 langsligger</dt><dd>4 × 1.500 · 4 × 400</dd>
+        <dt>2020 dwarsligger</dt><dd>14 × 736</dd>
+        <dt>2020 wandrail</dt><dd>2 × 1.500</dd>
+        <dt>2020 poot (los)</dt><dd>2 × 690</dd>
+        <dt>Totaal 2020-profiel</dt><dd>22.284</dd>
+        <dt>Bamboe 4 mm</dt><dd>2 × 775 × 1.500 · 2 × 775 × 400</dd>
+        <dt>Scharnieren</dt><dd>6 st. (3 per kant)</dd>
+        <dt>Matras 80 mm</dt><dd>2 × 700 × 1.500 · 2 × 700 × 400</dd>
+        <dt>Spanbanden matras</dt><dd>4 st.</dd>
+      </dl>
+    </section>
+    <section class="info" data-layer="side">
+      <h2><span class="key" style="background:var(--side)"></span>Zijkasten (optioneel)</h2>
+      <p class="note" style="margin:0 0 6px">Twee gelijke 2020-kasten tegen de zijwanden, tussen het keukenblok en de achterkast. Het voorste deel staat op de vloer. Het achterste deel begint op 400 hoogte en loopt over de wielkast en de zitlade heen. Achteraan zit de kast vast aan de voorkant van de achterkast. Bovenop liggen twee kussens van 80 dik per kast.</p>
+      <dl>
+        <dt>Per kast L × D × H</dt><dd>1.105 × 500 × 600</dd>
+        <dt>Positie vanaf schot</dt><dd>775 – 1.880</dd>
+        <dt>Staand deel (tot vloer)</dt><dd>775 – 1.050</dd>
+        <dt>Over wielkast vanaf</dt><dd>400 hoog</dd>
+        <dt>Zithoogte met kussen</dt><dd>680</dd>
+        <dt>Vrij tot kookplaat-zwaai</dt><dd class="est">≈ 360</dd>
+      </dl>
+      <h2 style="margin-top:14px">Zaaglijst 2020 (2 kasten)</h2>
+      <dl>
+        <dt>Langsligger boven</dt><dd>4 × 1.105</dd>
+        <dt>Langsligger onder (over wielkast)</dt><dd>4 × 830</dd>
+        <dt>Langsligger vloer</dt><dd>4 × 275</dd>
+        <dt>Post staand deel</dt><dd>8 × 562</dd>
+        <dt>Post achter</dt><dd>4 × 142</dd>
+        <dt>Diepteligger</dt><dd>16 × 460</dd>
+        <dt>Totaal 2020-profiel</dt><dd>21.264</dd>
+        <dt>Blad multiplex 18 mm</dt><dd>2 × 1.105 × 500</dd>
+        <dt>Legbord 12 mm</dt><dd>2 × 830 × 500 · 2 × 275 × 460</dd>
+        <dt>Kussens 80 mm</dt><dd>2 × 325 × 475 achter</dd>
+        <dt>Voorste kussen</dt><dd>kopdeel klapbed, of 2 × 780 × 475</dd>
+      </dl>
+    </section>
+    <p class="info-empty" id="info-empty" hidden>Zet een maatlaag aan om hier de maten te zien.</p>
+    <p class="note info" id="info-note">Maten volgens Kia-opgaven voor de L2H2. Waarden met ≈ zijn geschat uit de foto's; hoogte en vorm van de wielkasten in de laadruimte zijn benaderd. De carrosserie is een vereenvoudigd model, de maatvoering is op schaal.</p>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function(){
+const mm = v => v/1000;
+// --- Dimensions (metres) ---
+const L=mm(4695), W=mm(1895), H=mm(2200), WB=mm(2995);
+const XF=mm(900), XR=XF+WB;              // axle positions from nose
+const TR=mm(345), TW=mm(215), TRACK=mm(1620);
+const CL=mm(2255), CW=mm(1565), CWA=mm(1330), CH=mm(1815), FLOOR=mm(420);
+const CX1=L-mm(70), CX0=CX1-CL;          // cargo box along x
+
+const stage=document.getElementById('stage'), canvas=document.getElementById('c'), labelsEl=document.getElementById('labels');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputEncoding=THREE.sRGBEncoding;
+const scene=new THREE.Scene();
+
+const persp=new THREE.PerspectiveCamera(35,1,0.05,100);
+const ortho=new THREE.OrthographicCamera(-1,1,1,-1,0.05,100);
+let cam=persp;
+const controls=new THREE.OrbitControls(persp,canvas);
+controls.enableDamping=true; controls.target.set(0,1.0,0);
+controls.maxPolarAngle=Math.PI/2-0.02; controls.minDistance=2.5; controls.maxDistance=20;
+
+// --- Lights ---
+scene.add(new THREE.HemisphereLight(0xffffff,0x8a8f96,0.75));
+const sun=new THREE.DirectionalLight(0xffffff,0.85);
+sun.position.set(-4,8,6); sun.castShadow=true; sun.shadow.bias=-0.0006; sun.shadow.normalBias=0.03; sun.shadow.mapSize.set(2048,2048);
+Object.assign(sun.shadow.camera,{left:-5,right:5,top:5,bottom:-5,near:1,far:25});
+scene.add(sun);
+const fill=new THREE.DirectionalLight(0xffffff,0.35); fill.position.set(6,3,-5); scene.add(fill);
+
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),new THREE.ShadowMaterial({opacity:0.22}));
+ground.rotation.x=-Math.PI/2; ground.receiveShadow=true; scene.add(ground);
+const grid=new THREE.GridHelper(12,24,0x000000,0x000000);
+grid.material.transparent=true; grid.material.opacity=0.07; scene.add(grid);
+
+// --- Materials ---
+// Kia 'Soft Mint Metallic' – zachte saliegroene mint, kleur afgenomen van de Kia-persfoto
+const paint=new THREE.MeshStandardMaterial({color:new THREE.Color(0xbfcab7).convertSRGBToLinear(),roughness:0.4,metalness:0.3,transparent:true}); // gemeten uit Kia-foto
+const black=new THREE.MeshStandardMaterial({color:0x1b1d20,roughness:0.75,metalness:0.05,transparent:true});
+const gloss=new THREE.MeshStandardMaterial({color:0x0c0d0f,roughness:0.15,metalness:0.4,transparent:true});
+const glass=new THREE.MeshStandardMaterial({color:0x9fb4c4,roughness:0.05,metalness:0.1,transparent:true,opacity:0.18,depthWrite:false,side:THREE.DoubleSide});
+const lightMat=new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xdfe8ff,emissiveIntensity:0.9});
+const redMat=new THREE.MeshStandardMaterial({color:0x7a0d12,emissive:0x5a0508,roughness:0.3});
+const tyre=new THREE.MeshStandardMaterial({color:0x141414,roughness:0.9});
+const rim=new THREE.MeshStandardMaterial({color:0x26282b,roughness:0.4,metalness:0.6});
+const rimHi=new THREE.MeshStandardMaterial({color:0xb9bec4,roughness:0.3,metalness:0.8});
+
+const van=new THREE.Group(); van.position.x=-L/2; scene.add(van);
+const bodyParts=[];  // meshes that fade in cargo mode
+function add(mesh,fade=true,parent=van){mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);if(fade)bodyParts.push(mesh);return mesh}
+
+// --- Body: extruded side profile ---
+const BOT=mm(360), AR=mm(440), AY=TR;
+function archPts(cx){const pts=[],a0=Math.asin((BOT-AY)/AR);
+  for(let i=0;i<=24;i++){const t=a0+(Math.PI-2*a0)*i/24;pts.push([cx+AR*Math.cos(t),AY+AR*Math.sin(t)])}return pts}
+const prof=[[0.06,BOT],[0.015,0.46],[0,0.60],[0,0.86],[0.03,0.99],[0.12,1.12],[0.35,1.27],[0.62,1.34],
+  [1.30,1.86],[1.42,1.98],[1.60,2.09],[1.85,2.15],[L-0.18,2.15],[L-0.08,2.12],[L-0.02,2.05],[L,1.95],
+  [L,0.44],[L-0.03,0.40],[L-0.06,BOT],
+  ...archPts(XR),...archPts(XF)];
+const shape=new THREE.Shape(); prof.forEach(([x,y],i)=>i?shape.lineTo(x,y):shape.moveTo(x,y));
+const bev=0.045;
+const bodyGeo=new THREE.ExtrudeGeometry(shape,{depth:W-2*bev,bevelEnabled:true,bevelThickness:bev,bevelSize:bev,bevelOffset:-bev,bevelSegments:4,curveSegments:8});
+bodyGeo.translate(0,0,-(W-2*bev)/2);
+// carrosserie met uitsparingen: deuropeningen worden doorzichtig als de deuren open staan
+const DOOR={x0:CX0-0.04,x1:CX0+0.86,y0:BOT+0.10,y1:1.95,out:0.07,back:0.86};
+const REAR={hz:W/2-0.025,y0:0.45,y1:1.93,ro:mm(1343)};
+const bodyPaint=paint.clone(); bodyPaint.side=THREE.DoubleSide;
+const cutU={uSide:{value:0},uRear:{value:0}};
+bodyPaint.onBeforeCompile=sh=>{
+  Object.assign(sh.uniforms,cutU);
+  sh.vertexShader='varying vec3 vObj;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvObj=position;');
+  const f=n=>n.toFixed(4);
+  sh.fragmentShader='varying vec3 vObj;uniform float uSide;uniform float uRear;\n'+sh.fragmentShader
+    .replace('#include <clipping_planes_fragment>',`#include <clipping_planes_fragment>
+      if(uSide>0.5 && abs(vObj.z)>${f(W/2-0.09)} && vObj.x>${f(DOOR.x0+0.03)} && vObj.x<${f(DOOR.x1-0.03)} && vObj.y>${f(DOOR.y0+0.03)} && vObj.y<${f(DOOR.y1-0.04)}) discard;
+      if(uRear>0.5 && vObj.x>${f(L-0.09)} && abs(vObj.z)<${f(REAR.ro/2)} && vObj.y>${f(REAR.y0)} && vObj.y<${f(REAR.y1)}) discard;
+      // voorruit en zijruiten voor: doorkijk naar de cabine
+      { vec2 wa=vec2(0.62,1.34), wb=vec2(1.30,1.86); vec2 d=wb-wa; float t=dot(vObj.xy-wa,d)/dot(d,d);
+        float dist=abs((vObj.x-wa.x)*d.y-(vObj.y-wa.y)*d.x)/length(d);
+        if(dist<0.02 && t>0.05 && t<0.95 && abs(vObj.z)<${f(W/2-0.09)}) discard; }
+      if(abs(vObj.z)>${f(W/2-0.09)} && vObj.x>0.83 && vObj.x<2.01 && vObj.y>1.17 && vObj.y<1.83 && vObj.y<1.40+(vObj.x-0.80)*0.767-0.03) discard;
+      // wielkastkoker niet dwars door de laadruimte laten lopen: alleen aan de zijkanten houden
+      if(abs(vObj.z)<${f(CWA/2)} && vObj.y>${f(BOT-0.02)} && (abs(length(vObj.xy-vec2(${f(XR)},${f(AY)}))-${f(AR)})<0.03 || abs(length(vObj.xy-vec2(${f(XF)},${f(AY)}))-${f(AR)})<0.03)) discard;`)
+    .replace('#include <color_fragment>','#include <color_fragment>\n if(!gl_FrontFacing) diffuseColor.rgb*=0.32;');
+};
+add(new THREE.Mesh(bodyGeo,bodyPaint));
+// interieur laadruimte (zichtbaar door open deuren)
+const interior=new THREE.Group(); van.add(interior);
+const inMat=new THREE.MeshStandardMaterial({color:0x34383e,roughness:0.9});
+{const fl=new THREE.Mesh(new THREE.BoxGeometry(CL,0.02,CW),inMat); fl.position.set((CX0+CX1)/2,FLOOR-0.01,0); fl.receiveShadow=true; interior.add(fl);
+ // tussenschot: 3 schuifpanelen over de hele breedte, op 3 sporen achter elkaar.
+ // Openen = alle panelen telescopisch naar links schuiven, achter de bestuurdersstoel (+z).
+ const BY0=FLOOR, BY1=2.11, BX=CX0-0.015, E=W/2-0.03, PW=2*E/3, RAIL=0.05, PY1=BY1-RAIL-0.005;
+ const panMat=new THREE.MeshStandardMaterial({color:0x2c3036,roughness:0.75,side:THREE.DoubleSide});
+ const gripMat=new THREE.MeshStandardMaterial({color:0x9aa1aa,metalness:0.6,roughness:0.3});
+ const railMat=new THREE.MeshStandardMaterial({color:0x1b1d20,roughness:0.6});
+ const panels=[]; const bhG=new THREE.Group(); van.add(bhG); // altijd zichtbaar, ook in laadruimte-weergave
+ for(let k=0;k<3;k++){ // k=0 bestuurderskant (blijft staan), k=2 passagierskant (schuift het verst)
+   const g=new THREE.Group(); bhG.add(g);
+   const ph=PY1-BY0;
+   const m=new THREE.Mesh(new THREE.BoxGeometry(0.018,ph,PW+0.02),panMat); m.position.set(0,ph/2,0); m.castShadow=true; g.add(m);
+   const gr=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.22,0.03),gripMat); gr.position.set(0.018,ph*0.55,-PW/2+0.07); g.add(gr);
+   const x=BX+0.012+k*0.026, zc=E-PW/2-k*PW;
+   g.position.set(x,BY0,zc); panels.push({g,zc,k});
+ }
+ const rail=new THREE.Mesh(new THREE.BoxGeometry(3*0.026+0.01,RAIL,2*E),railMat); rail.position.set(BX+0.012+0.026,BY1-RAIL/2,0); bhG.add(rail);
+ const guide=new THREE.Mesh(new THREE.BoxGeometry(3*0.026+0.01,0.012,2*E),railMat); guide.position.set(BX+0.012+0.026,FLOOR+0.006,0); bhG.add(guide);
+ window.__bh={panels,PW,E,PY1};
+ // dashboard en stuur (zichtbaar door de ruiten)
+ {const dash=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.20,W-0.16),new THREE.MeshStandardMaterial({color:0x2a2f36,roughness:0.8})); dash.position.set(0.86,1.12,0); interior.add(dash);
+  const scr=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.12,0.30),new THREE.MeshStandardMaterial({color:0x0a0a0a,emissive:0x1d3557,emissiveIntensity:0.6})); scr.position.set(1.06,1.29,0.05); interior.add(scr);
+  const sw=new THREE.Mesh(new THREE.TorusGeometry(0.17,0.018,10,32),new THREE.MeshStandardMaterial({color:0x111214,roughness:0.6})); sw.position.set(1.22,1.20,0.43); sw.rotation.y=Math.PI/2; sw.rotation.x=0; sw.rotateOnAxis(new THREE.Vector3(1,0,0),0); sw.rotation.z=-0.45; interior.add(sw);
+  const col=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.30,10),new THREE.MeshStandardMaterial({color:0x111214})); col.position.set(1.10,1.14,0.43); col.rotation.z=1.1; interior.add(col);}
+ // stoelen en cabinevloer (zichtbaar door de doorloop)
+ const seatMat=new THREE.MeshStandardMaterial({color:0x3e4652,roughness:0.85});
+ const cf=new THREE.Mesh(new THREE.BoxGeometry(CX0-0.6,0.02,W-0.12),new THREE.MeshStandardMaterial({color:0x22262b,roughness:1})); cf.position.set((0.6+CX0)/2,0.46,0); interior.add(cf);
+ for(const z of [0.43,-0.43]){
+   const base=new THREE.Mesh(new THREE.BoxGeometry(0.52,0.14,0.50),seatMat); base.position.set(1.85,0.80,z); interior.add(base);
+   const ped=new THREE.Mesh(new THREE.BoxGeometry(0.36,0.30,0.36),new THREE.MeshStandardMaterial({color:0x15171a})); ped.position.set(1.85,0.60,z); interior.add(ped);
+   const back=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.72,0.50),seatMat); back.position.set(2.16,1.22,z); back.rotation.z=-0.18; interior.add(back);
+   const head=new THREE.Mesh(new THREE.BoxGeometry(0.10,0.20,0.30),seatMat); head.position.set(2.24,1.70,z); head.rotation.z=-0.18; interior.add(head);
+ }
+ // wielkasten binnen: van zijwand tot 1.330 tussenmaat, net boven de koker
+ const ah=AY+AR+0.02-FLOOR, aw=W/2-0.01-CWA/2;
+ for(const s of [1,-1]){const a=new THREE.Mesh(new THREE.BoxGeometry(2*AR+0.06,ah,aw),inMat); a.position.set(XR,FLOOR+ah/2,s*(CWA/2+aw/2)); interior.add(a);}
+ // afdekking onder de vloer tussen de wielen (verbergt de onderkant)
+ const ub=new THREE.Mesh(new THREE.BoxGeometry(2*AR+0.1,0.02,CWA),new THREE.MeshStandardMaterial({color:0x111214,roughness:1})); ub.position.set(XR,BOT+0.01,0); interior.add(ub);
+ const ubf=ub.clone(); ubf.position.x=XF; interior.add(ubf);}
+
+// side details on both flanks
+for(const s of [1,-1]){
+  const z=s*(W/2+0.003);
+  // front door glass
+  const g=new THREE.Shape([[0.80,1.14],[2.04,1.14],[2.04,1.86],[1.40,1.86],[0.80,1.40]].map(p=>new THREE.Vector2(...p)));
+  const gm=add(new THREE.Mesh(new THREE.ShapeGeometry(g),glass)); gm.position.z=z;
+  // A-pillar black band
+  const ap=new THREE.Shape([[0.60,1.30],[0.80,1.30],[0.80,1.40],[1.40,1.86],[2.12,1.86],[2.12,2.06],[1.60,2.03],[1.42,1.93],[1.30,1.82]].map(p=>new THREE.Vector2(...p)));
+  const apm=add(new THREE.Mesh(new THREE.ShapeGeometry(ap),gloss)); apm.position.z=z-s*0.0005;
+  // panel seams
+  for(const x of [2.16]){const sm=add(new THREE.Mesh(new THREE.BoxGeometry(0.008,1.55,0.004),black));sm.position.set(x,1.17,z)}
+  const rail=add(new THREE.Mesh(new THREE.BoxGeometry(L-0.30-DOOR.x1,0.014,0.006),black)); rail.position.set((DOOR.x1+L-0.30)/2,1.42,z); // schuifdeurrail
+  const h1=add(new THREE.Mesh(new THREE.BoxGeometry(0.22,0.05,0.02),black)); h1.position.set(1.98,1.08,z);
+  // wheel arch flares
+  for(const cx of [XF,XR]){
+    const fl=add(new THREE.Mesh(new THREE.TorusGeometry(AR+0.035,0.045,8,32,Math.PI-0.08),black));
+    fl.position.set(cx,AY,s*(W/2-0.02)); fl.rotation.z=0.04; fl.scale.z=1.4;
+  }
+  // sill
+  const sill=add(new THREE.Mesh(new THREE.BoxGeometry(XR-XF-2*AR-0.04,0.16,0.05),black)); sill.position.set((XF+XR)/2,BOT+0.07,s*(W/2-0.01));
+  // mirror
+  const mr=add(new THREE.Mesh(new THREE.BoxGeometry(0.07,0.17,0.17),gloss)); mr.position.set(0.90,1.40,s*(W/2+0.13)); mr.rotation.y=s*0.12;
+  const ma=add(new THREE.Mesh(new THREE.BoxGeometry(0.05,0.035,0.08),gloss)); ma.position.set(0.88,1.34,s*(W/2+0.04));
+  // roof rail
+  const rr=add(new THREE.Mesh(new THREE.BoxGeometry(2.45,0.05,0.05),black)); rr.position.set(3.125,H-0.025,s*(W/2-0.13));
+}
+// --- Schuifdeuren (beide zijden): openen eerst naar buiten, dan naar achteren langs de rail ---
+const doors=[];
+for(const s of [1,-1]){
+  const g=new THREE.Group(); van.add(g);
+  const dl=DOOR.x1-DOOR.x0, dh=DOOR.y1-DOOR.y0;
+  const panel=add(new THREE.Mesh(new THREE.BoxGeometry(dl,dh,0.035),paint),true,g);
+  panel.position.set(dl/2,dh/2,0);
+  const edge=add(new THREE.Mesh(new THREE.BoxGeometry(dl+0.012,dh+0.012,0.02),black),true,g); edge.position.set(dl/2,dh/2,-s*0.008);
+  const inner=add(new THREE.Mesh(new THREE.BoxGeometry(dl+0.012,dh+0.012,0.003),paint),true,g); inner.position.set(dl/2,dh/2,-s*0.0195); // binnenkant mintgroen
+  const hd=add(new THREE.Mesh(new THREE.BoxGeometry(0.22,0.05,0.025),black),true,g); hd.position.set(0.18,1.08-DOOR.y0,s*0.025);
+  const rl=add(new THREE.Mesh(new THREE.BoxGeometry(dl*0.9,0.012,0.006),black),true,g); rl.position.set(dl/2,1.42-DOOR.y0,s*0.019);
+  // rollen/arm naar de rail
+  const arm=add(new THREE.Mesh(new THREE.BoxGeometry(0.05,0.04,0.08),black),true,g); arm.position.set(dl-0.03,1.42-DOOR.y0,-s*0.04);
+  doors.push({g,s});
+}
+let doorT=0, doorTarget=0;
+function placeDoors(){
+  const p1=Math.min(1,doorT/0.3), p2=Math.max(0,(doorT-0.3)/0.7);
+  const e1=1-Math.pow(1-p1,2), e2=p2<.5?2*p2*p2:1-Math.pow(-2*p2+2,2)/2;
+  for(const d of doors){
+    d.g.position.set(DOOR.x0+DOOR.back*e2, DOOR.y0, d.s*(W/2+0.02+DOOR.out*e1));
+  }
+  cutU.uSide.value=doorT>0.04?1:0;
+}
+placeDoors();
+const doorLiner=new THREE.MeshStandardMaterial({color:paint.color.clone(),roughness:0.55,metalness:0.2,transparent:true}); // binnenkant achterdeuren mintgroen
+// --- Achterdeuren: scharnier aan de buitenkant, openen tot 180° ---
+const rdoors=[];
+for(const s of [1,-1]){
+  const g=new THREE.Group(); g.position.set(L+0.03,REAR.y0-0.02,s*REAR.hz); van.add(g);
+  const dw=REAR.hz-0.004, dh=REAR.y1-REAR.y0+0.05;
+  const pn=add(new THREE.Mesh(new THREE.BoxGeometry(0.04,dh,dw),paint),true,g); pn.position.set(0,dh/2,-s*dw/2);
+  const ln=add(new THREE.Mesh(new THREE.BoxGeometry(0.004,dh-0.16,dw-0.14),doorLiner),true,g); ln.position.set(-0.022,dh/2,-s*dw/2);
+  const lamp=add(new THREE.Mesh(new THREE.BoxGeometry(0.012,0.30,0.07),redMat),true,g); lamp.position.set(0.022,0.30,-s*0.06);
+  const hd=add(new THREE.Mesh(new THREE.BoxGeometry(0.02,0.16,0.04),black),true,g); hd.position.set(0.026,0.62,-s*(dw-0.08));
+  for(const hy of [0.18,dh-0.18]){const h=add(new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.09,10),black),true,g); h.position.set(0,hy,0);}
+  rdoors.push({g,s});
+}
+let passT=0, passTarget=0;
+function placePass(){const B=window.__bh;const e=passT<.5?2*passT*passT:1-Math.pow(-2*passT+2,2)/2;
+  for(const p of B.panels) p.g.position.z=p.zc+p.k*B.PW*e;}
+placePass();
+let rearT=0, rearTarget=0;
+function placeRear(){
+  const e=rearT<.5?2*rearT*rearT:1-Math.pow(-2*rearT+2,2)/2;
+  for(const d of rdoors) d.g.rotation.y=-d.s*Math.PI*e;
+  cutU.uRear.value=rearT>0.02?1:0;
+}
+placeRear();
+
+// windshield
+{const a=new THREE.Vector3(0.62,1.34,0),b=new THREE.Vector3(1.30,1.86,0);const len=a.distanceTo(b);
+ const ws=add(new THREE.Mesh(new THREE.PlaneGeometry(W-0.18,len),glass));
+ const n=new THREE.Vector3(-(b.y-a.y),(b.x-a.x),0).normalize();
+ ws.position.copy(a.clone().add(b).multiplyScalar(0.5)).add(n.clone().multiplyScalar(0.006));
+ const ydir=b.clone().sub(a).normalize();
+ ws.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(new THREE.Vector3(0,0,1),ydir,n));}
+// front black nose band + light bar
+{// motorkap: dichte zwarte kap die de carrosserielijn volgt
+ const hp=[[0.03,0.99],[0.12,1.12],[0.35,1.27],[0.62,1.34]];
+ const nrm=(i)=>{const a=hp[Math.max(0,i-1)],b=hp[Math.min(hp.length-1,i+1)];const dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy);return[-dy/l,dx/l]};
+ const hs=new THREE.Shape();
+ hp.forEach((p,i)=>{const n=nrm(i);const q=[p[0]+n[0]*0.006,p[1]+n[1]*0.006];i?hs.lineTo(...q):hs.moveTo(...q)});
+ for(let i=hp.length-1;i>=0;i--){const n=nrm(i);hs.lineTo(hp[i][0]-n[0]*0.02,hp[i][1]-n[1]*0.02)}
+ const hg=new THREE.ExtrudeGeometry(hs,{depth:W-0.05,bevelEnabled:false}); hg.translate(0,0,-(W-0.05)/2);
+ add(new THREE.Mesh(hg,gloss));
+ const lb=add(new THREE.Mesh(new THREE.BoxGeometry(0.02,0.02,W-0.25),lightMat)); lb.position.set(0.04,0.985,0); lb.rotation.z=0.6;
+ for(const s of [1,-1]){const v=add(new THREE.Mesh(new THREE.BoxGeometry(0.02,0.16,0.025),lightMat)); v.position.set(0.035,0.90,s*(W/2-0.06)); v.rotation.z=0.25;}}
+// bumpers
+{const fb=add(new THREE.Mesh(new THREE.BoxGeometry(0.10,0.26,W-0.02),black)); fb.position.set(0.03,0.50,0);
+ const pl=add(new THREE.Mesh(new THREE.BoxGeometry(0.01,0.11,0.52),new THREE.MeshStandardMaterial({color:0xe9eaec,roughness:0.5,transparent:true}))); pl.position.set(-0.022,0.62,0);
+ const rb=add(new THREE.Mesh(new THREE.BoxGeometry(0.14,0.20,W-0.02),black)); rb.position.set(L-0.03,FLOOR-0.10,0); // achterbumper: bovenkant gelijk met laadvloer
+ const hb=add(new THREE.Mesh(new THREE.BoxGeometry(0.03,0.04,0.30),redMat)); hb.position.set(L-0.01,H-0.10,0);
+ // rear door split + outline
+}
+
+// wheels (not faded)
+for(const x of [XF,XR]) for(const s of [1,-1]){
+  const w=new THREE.Group(); w.position.set(x,TR,s*TRACK/2);
+  const t=new THREE.Mesh(new THREE.CylinderGeometry(TR,TR,TW,40),tyre); t.rotation.x=Math.PI/2; t.castShadow=true; w.add(t);
+  const r=new THREE.Mesh(new THREE.CylinderGeometry(TR*0.66,TR*0.66,TW+0.01,32),rim); r.rotation.x=Math.PI/2; w.add(r);
+  for(let k=0;k<2;k++){const sp=new THREE.Mesh(new THREE.BoxGeometry(TR*1.25,0.035,0.006),rimHi);sp.position.z=s*(TW/2+0.006);sp.rotation.z=0.5+k*Math.PI/1;w.add(sp)}
+  const hub=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,TW+0.03,6),rim); hub.rotation.x=Math.PI/2; w.add(hub);
+  van.add(w);
+}
+
+// --- Cargo volume ---
+const cargoCol=()=>getComputedStyle(document.documentElement).getPropertyValue('--cargo').trim()||'#2563eb';
+const cargo=new THREE.Group(); van.add(cargo); cargo.visible=false;
+const cargoFill=new THREE.MeshStandardMaterial({color:cargoCol(),transparent:true,opacity:0.16,depthWrite:false,side:THREE.DoubleSide});
+const cargoLine=new THREE.LineBasicMaterial({color:cargoCol()});
+function boxW(x0,x1,y0,y1,z0,z1){const g=new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0);
+  const m=new THREE.Mesh(g,cargoFill); m.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2); cargo.add(m);
+  const e=new THREE.LineSegments(new THREE.EdgesGeometry(g),cargoLine); e.position.copy(m.position); cargo.add(e);}
+boxW(CX0,CX1,FLOOR,FLOOR+CH,-CW/2,CW/2);
+const archH=AY+AR+0.02-FLOOR, archL=2*AR+0.06, inset=(CW-CWA)/2;
+for(const s of [1,-1]){
+  const g=new THREE.BoxGeometry(archL,archH,inset);
+  const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0x3a3f46,roughness:0.8}));
+  m.position.set(XR,FLOOR+archH/2,s*(CW/2-inset/2)); cargo.add(m);
+}
+const floor=new THREE.Mesh(new THREE.BoxGeometry(CL,0.02,CW),new THREE.MeshStandardMaterial({color:0x4a4f57,roughness:0.9}));
+floor.position.set((CX0+CX1)/2,FLOOR-0.01,0); cargo.add(floor);
+
+// --- Dimension layers ---
+const dims=[];
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+const LAYERS={
+  ext:{token:'--accent'}, wheel:{token:'--wheel'}, cargo:{token:'--cargo'}, open:{token:'--open'}, hook:{token:'--hook'}
+};
+for(const k in LAYERS){const g=new THREE.Group();van.add(g);LAYERS[k].group=g;
+  LAYERS[k].mat=new THREE.LineBasicMaterial({color:cssVar(LAYERS[k].token)||'#888',depthTest:false,transparent:true});}
+function dim(layer,a,b,off,label){
+  const Ly=LAYERS[layer];
+  const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),O=new THREE.Vector3(...off);
+  const A2=A.clone().add(O),B2=B.clone().add(O);
+  const dir=B2.clone().sub(A2).normalize();
+  let on=O.lengthSq()>0?O.clone().normalize():new THREE.Vector3(0,1,0);
+  if(Math.abs(on.dot(dir))>0.9) on=new THREE.Vector3(1,0,0);
+  const tick=dir.clone().add(on).normalize().multiplyScalar(0.05);
+  const pts=[A2,B2, A2.clone().sub(tick),A2.clone().add(tick), B2.clone().sub(tick),B2.clone().add(tick)];
+  if(O.lengthSq()>0){const ex=on.clone().multiplyScalar(0.06);pts.push(A,A2.clone().add(ex),B,B2.clone().add(ex))}
+  const ls=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts),Ly.mat);
+  ls.renderOrder=10; Ly.group.add(ls);
+  const el=document.createElement('div'); el.className='lbl'; el.style.setProperty('--c','var('+Ly.token+')');
+  el.textContent=label; labelsEl.appendChild(el);
+  dims.push({group:Ly.group,mid:A2.clone().add(B2).multiplyScalar(0.5),el});
+}
+function outline(layer,pts){const P=pts.map(p=>new THREE.Vector3(...p));const seg=[];
+  for(let i=0;i<P.length;i++){seg.push(P[i],P[(i+1)%P.length])}
+  const ls=new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(seg),LAYERS[layer].mat);ls.renderOrder=10;LAYERS[layer].group.add(ls)}
+const zs=W/2;
+// Hoofdmaten
+dim('ext',[0,0.01,zs],[L,0.01,zs],[0,0,0.55],'4.695');
+dim('ext',[XF,0.01,zs],[XR,0.01,zs],[0,0,0.28],'2.995');
+dim('ext',[L,0,-zs],[L,H,-zs],[0.45,0,0],'2.200');
+dim('ext',[0,0.01,-zs],[0,0.01,zs],[-0.45,0,0],'1.895');
+// Wielen & overhang (keten met de wielbasis)
+dim('wheel',[0,0.01,zs],[XF,0.01,zs],[0,0,0.28],'900 ≈');
+dim('wheel',[XR,0.01,zs],[L,0.01,zs],[0,0,0.28],'800 ≈');
+dim('wheel',[XF,0,TRACK/2+TW/2+0.04],[XF,2*TR,TRACK/2+TW/2+0.04],[0,0,0],'Ø 690 ≈');
+dim('wheel',[XF-TR-0.05,0.01,-TRACK/2],[XF-TR-0.05,0.01,TRACK/2],[-0.95,0,0],'spoor 1.620 ≈');
+// Laadruimte
+dim('cargo',[CX0,FLOOR+CH,0],[CX1,FLOOR+CH,0],[0,0.12,0],'2.255');
+dim('cargo',[CX1,FLOOR+CH,-CW/2],[CX1,FLOOR+CH,CW/2],[0,0.12,0],'1.565');
+dim('cargo',[CX1-0.02,FLOOR+archH+0.03,-CWA/2],[CX1-0.02,FLOOR+archH+0.03,CWA/2],[0,0,0],'1.330');
+dim('cargo',[CX1,FLOOR,CW/2],[CX1,FLOOR+CH,CW/2],[0,0,0.12],'1.815');
+dim('cargo',[L,0,zs],[L,FLOOR,zs],[0.22,0,0],'420 ≈');
+outline('cargo',[[CX0,FLOOR,-CW/2],[CX1,FLOOR,-CW/2],[CX1,FLOOR,CW/2],[CX0,FLOOR,CW/2]]);
+// Deuropeningen
+const RO=mm(1343), ROH=REAR.y1-FLOOR, SD0=CX0+0.01, SD1=SD0+mm(775), SDH=DOOR.y1-0.06;
+outline('open',[[L+0.01,FLOOR,-RO/2],[L+0.01,FLOOR,RO/2],[L+0.01,FLOOR+ROH,RO/2],[L+0.01,FLOOR+ROH,-RO/2]]);
+dim('open',[L+0.01,FLOOR+ROH,-RO/2],[L+0.01,FLOOR+ROH,RO/2],[0,0.14,0],'1.343');
+// schuifdeuropening links (+z) en gespiegeld rechts (−z)
+for(const sgn of [1,-1]){const zz=sgn*(zs+0.01);
+  outline('open',[[SD0,FLOOR,zz],[SD1,FLOOR,zz],[SD1,SDH,zz],[SD0,SDH,zz]]);
+  dim('open',[SD0,SDH,zz],[SD1,SDH,zz],[0,0.14,0],'775');}
+// doorloop tussenschot
+{const B=window.__bh, xx=CX0+0.10, z0=-B.E, z1=B.E-B.PW;
+ outline('open',[[xx,FLOOR,z0],[xx,FLOOR,z1],[xx,B.PY1,z1],[xx,B.PY1,z0]]);
+ dim('open',[xx,B.PY1,z0],[xx,B.PY1,z1],[0,0.10,0],Math.round((z1-z0)*1000).toLocaleString('nl-NL')+' ≈');
+ dim('open',[xx,FLOOR,z0],[xx,B.PY1,z0],[0,0,0.10],Math.round((B.PY1-FLOOR)*1000).toLocaleString('nl-NL')+' ≈');}
+
+// Sjorogen: posities afgeleid van het bovenaanzicht (x vanaf schot, z vanaf hartlijn; − = rechterzijde)
+const HY=FLOOR+0.004;
+const hookMat=new THREE.MeshStandardMaterial({color:cssVar('--hook')||'#a16207',roughness:0.35,metalness:0.6});
+const cupMat=new THREE.MeshStandardMaterial({color:0x111214,roughness:0.6});
+LAYERS.hook.solid=hookMat;
+const ROWS=[{dx:40,z:510},{dx:930,z:547},{dx:1320,z:335},{dx:2010,z:390}];
+let hookNr=0;
+for(const r of ROWS) for(const sgn of [1,-1]){ // oneven = links (bestuurderskant), even = rechts
+  const g=new THREE.Group(); g.position.set(CX0+mm(r.dx),HY,sgn*mm(r.z));
+  { hookNr++; const el=document.createElement('div'); el.className='lbl num'; el.style.setProperty('--c','var(--hook)'); el.textContent=hookNr; labelsEl.appendChild(el);
+    dims.push({group:LAYERS.hook.group,mid:new THREE.Vector3(CX0+mm(r.dx),HY+0.11,sgn*mm(r.z)),el}); }
+  const cup=new THREE.Mesh(new THREE.CylinderGeometry(0.035,0.035,0.006,24),cupMat); g.add(cup);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.024,0.006,8,24),hookMat); ring.rotation.x=Math.PI/2; ring.position.y=0.004; g.add(ring);
+  const loop=new THREE.Mesh(new THREE.TorusGeometry(0.02,0.005,8,16,Math.PI),hookMat); loop.rotation.y=Math.PI/4; loop.position.y=0.006; g.add(loop);
+  const halo=new THREE.Mesh(new THREE.RingGeometry(0.05,0.058,32),LAYERS.hook.mat); halo.rotation.x=-Math.PI/2; halo.position.y=0.002; g.add(halo);
+  LAYERS.hook.group.add(g);
+}
+// schroefpunten 9–18, genummerd vanaf het schot; paren: oneven links, even rechts
+const BOLTS=[[243,0],[616,56],[735,256],[735,-256],[748,622],[748,-622],[1148,264],[1148,-264],[1836,324],[1836,-324]];
+BOLTS.forEach(([dx,z],i)=>{
+  const b=new THREE.Mesh(new THREE.CylinderGeometry(0.018,0.018,0.006,16),cupMat); b.position.set(CX0+mm(dx),HY,mm(z)); LAYERS.hook.group.add(b);
+  const el=document.createElement('div'); el.className='lbl num pt'; el.style.setProperty('--c','var(--hook)'); el.textContent=9+i; labelsEl.appendChild(el);
+  dims.push({group:LAYERS.hook.group,mid:new THREE.Vector3(CX0+mm(dx),HY+0.08,mm(z)),el});
+});
+// maatvoering: lengte vanaf schot (rechterzijde) en hart-op-hart per rij
+ROWS.slice(1).forEach((r,i)=>dim('hook',[CX0,HY,-CW/2],[CX0+mm(r.dx),HY,-CW/2],[0,0,-0.12-0.12*i],(r.dx>=1000?(r.dx/1000).toFixed(3):r.dx)+' ≈'));
+ROWS.forEach(r=>{const v=2*r.z; dim('hook',[CX0+mm(r.dx),HY,-mm(r.z)],[CX0+mm(r.dx),HY,mm(r.z)],[0,0,0],(v>=1000?(v/1000).toFixed(3):v)+' ≈')});
+
+// ===== Keukenkastje 2020-profiel met draaibare inductieplaat (pen in schroefpunt 14) =====
+LAYERS.kitchen={token:'--kitchen'}; {const g=new THREE.Group();van.add(g);LAYERS.kitchen.group=g;
+  LAYERS.kitchen.mat=new THREE.LineBasicMaterial({color:cssVar('--kitchen')||'#0e7490',depthTest:false,transparent:true});}
+const kitchen=new THREE.Group(); van.add(kitchen);
+const P20=0.02, KX0=CX0+0.078, KX1=KX0+0.65, KZ0=-CW/2, KZ1=KZ0+0.35, KH=0.60, KY=FLOOR;
+const aluMat=new THREE.MeshStandardMaterial({color:0xc4c9cf,metalness:0.7,roughness:0.35});
+const slotMat=new THREE.MeshStandardMaterial({color:0x7d848c,metalness:0.6,roughness:0.5});
+function p2020(x0,x1,y0,y1,z0,z1,parent=kitchen){ // 2020-profiel met zichtbare sleuven
+  const g=new THREE.Group(); parent.add(g);
+  const m=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0),aluMat); m.castShadow=true; m.receiveShadow=true; g.add(m);
+  const L=[x1-x0,y1-y0,z1-z0], ax=L.indexOf(Math.max(...L));
+  for(const [a,b] of [[0,1],[0,-1],[1,0],[-1,0]]){ // 4 sleuven langs de lange as
+    const d=[0,0,0], sz=[0.006,0.006,0.006]; sz[ax]=L[ax]+0.001;
+    const o=[0,1,2].filter(i=>i!==ax); d[o[0]]=a*(P20/2); d[o[1]]=b*(P20/2);
+    const sl=new THREE.Mesh(new THREE.BoxGeometry(...sz),slotMat); sl.position.set(...d); g.add(sl);
+  }
+  g.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2); return g;
+}
+{ const yT=KY+KH-0.012, yB=KY;                      // frame onder het 12 mm blad
+  for(const x of [KX0,KX1-P20]) for(const z of [KZ0,KZ1-P20]) p2020(x,x+P20,yB,yT,z,z+P20);          // 4 staanders 588
+  for(const y of [yB,yT-P20]){
+    for(const z of [KZ0,KZ1-P20]) p2020(KX0+P20,KX1-P20,y,y+P20,z,z+P20);                               // liggers lengte 610
+    for(const x of [KX0,KX1-P20]) p2020(x,x+P20,y,y+P20,KZ0+P20,KZ1-P20);                               // liggers diepte 310
+  }
+  const top=new THREE.Mesh(new THREE.BoxGeometry(0.65,0.012,0.35),new THREE.MeshStandardMaterial({color:0xd8c39a,roughness:0.8}));
+  top.position.set((KX0+KX1)/2,yT+0.006,(KZ0+KZ1)/2); top.castShadow=true; top.receiveShadow=true; kitchen.add(top);
+}
+// draaipen in schroefpunt 14 + lagerblokken aan de achterste staander
+const PIN={x:CX0+mm(748), z:-mm(622)};
+{ const pin=new THREE.Mesh(new THREE.CylinderGeometry(0.01,0.01,0.64,20),new THREE.MeshStandardMaterial({color:0xe5e7ea,metalness:0.9,roughness:0.2}));
+  pin.position.set(PIN.x,KY+0.32,PIN.z); pin.castShadow=true; kitchen.add(pin);
+  for(const y of [KY+0.03,KY+KH-0.04]){ const b=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.03,0.05),slotMat); b.position.set(PIN.x-0.006,y,PIN.z); kitchen.add(b);
+    const br=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.03,0.012),slotMat); br.position.set(KX1-0.002+0.01,y,PIN.z); kitchen.add(br); }
+  const foot=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.008,24),slotMat); foot.position.set(PIN.x,KY+0.004,PIN.z); kitchen.add(foot);
+}
+// draai-arm met kookplaat
+const ARM=new THREE.Group(); ARM.position.set(PIN.x,KY+KH,PIN.z); kitchen.add(ARM);
+const HOB={d:0.54,e:0.02,open:70*Math.PI/180};
+{ const collar=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.024,20),slotMat); collar.position.set(0,0.012,0); ARM.add(collar);
+  p2020(-0.70+0.01,0.01,0.002,0.022,-0.01,0.01,ARM);                         // arm 700 (2020)
+  const plate=new THREE.Mesh(new THREE.BoxGeometry(0.34,0.004,0.34),aluMat); plate.position.set(-HOB.d,0.024,HOB.e); plate.castShadow=true; ARM.add(plate);
+  const hob=new THREE.Mesh(new THREE.BoxGeometry(0.32,0.06,0.32),new THREE.MeshStandardMaterial({color:0x111214,roughness:0.35,metalness:0.2})); hob.position.set(-HOB.d,0.026+0.03,HOB.e); hob.castShadow=true; ARM.add(hob);
+  const glass=new THREE.Mesh(new THREE.BoxGeometry(0.316,0.004,0.316),new THREE.MeshStandardMaterial({color:0x050506,roughness:0.08,metalness:0.4})); glass.position.set(-HOB.d,0.088,HOB.e); ARM.add(glass);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(0.09,0.0025,6,48),new THREE.MeshStandardMaterial({color:0x9aa1aa,emissive:0x222222})); ring.rotation.x=Math.PI/2; ring.position.set(-HOB.d,0.091,HOB.e); ARM.add(ring);
+  const ring2=ring.clone(); ring2.scale.setScalar(0.6); ARM.add(ring2);
+  const ctl=new THREE.Mesh(new THREE.BoxGeometry(0.03,0.002,0.12),new THREE.MeshStandardMaterial({color:0x2a2d31,emissive:0x0c2a3a})); ctl.position.set(-HOB.d+0.135,0.091,HOB.e); ARM.add(ctl);
+}
+let hobT=0, hobTarget=0;
+function placeHob(){ const e=hobT<.5?2*hobT*hobT:1-Math.pow(-2*hobT+2,2)/2; ARM.rotation.y=-HOB.open*e; }
+placeHob();
+// maatlaag keuken
+{ const yT=KY+KH, zf=KZ1;
+  dim('kitchen',[KX0,yT,zf],[KX1,yT,zf],[0,0.10,0],'650');
+  dim('kitchen',[KX1,yT,KZ0],[KX1,yT,KZ1],[0,0.10,0],'350');
+  dim('kitchen',[KX0,KY,zf],[KX0,yT,zf],[0,0,0.10],'600');
+  dim('kitchen',[PIN.x,yT+0.10,PIN.z],[PIN.x-HOB.d,yT+0.10,PIN.z],[0,0,0],'arm 540');
+  dim('kitchen',[CX0,KY+0.005,PIN.z-0.0],[PIN.x,KY+0.005,PIN.z],[0,0,0],'748 ≈');
+  outline('kitchen',[[KX0,KY+0.002,KZ0],[KX1,KY+0.002,KZ0],[KX1,KY+0.002,KZ1],[KX0,KY+0.002,KZ1]]);
+  // zwaaiboog van het hart van de kookplaat
+  const arcPts=[]; for(let i=0;i<=24;i++){const th=HOB.open*i/24; arcPts.push(new THREE.Vector3(PIN.x-Math.cos(th)*HOB.d,yT+0.10,PIN.z-Math.sin(th)*HOB.d));}
+  const al=new THREE.Line(new THREE.BufferGeometry().setFromPoints(arcPts),LAYERS.kitchen.mat); al.renderOrder=10; LAYERS.kitchen.group.add(al);
+  const el=document.createElement('div'); el.className='lbl'; el.style.setProperty('--c','var(--kitchen)'); el.textContent='70°'; labelsEl.appendChild(el);
+  dims.push({group:LAYERS.kitchen.group,mid:arcPts[12].clone(),el});
+}
+
+// ===== Ladeblok tussen sjorogen 3/4 en 7/8: 2040 staand (zijwanden) + 2020, lade schuift over de vloer =====
+LAYERS.drawer={token:'--drawer'}; {const g=new THREE.Group();van.add(g);LAYERS.drawer.group=g;
+  LAYERS.drawer.mat=new THREE.LineBasicMaterial({color:cssVar('--drawer')||'#be185d',depthTest:false,transparent:true});}
+// twee losse blokken van 400 breed tegen de wielkasten, gangpad in het midden; elk met een zitplank-lade (100 hoog) die 600 naar achteren uitschuift
+const DB={x0:L-0.035-1.02, x1:L-0.035, w:0.40,   // achterkant tegen de achterbumper/achterdeuren
+  h:0.12, top:0.018, out:0.60};
+const blocks=[];
+function makeBlock(zc,name){
+  const G=new THREE.Group(); G.name=name; G.position.z=zc; van.add(G);       // los element: eigen groep, eigen lade
+  const y0=FLOOR, zw=DB.w/2, zi=zw-0.02;
+  for(const sg of [1,-1]){ const za=sg>0?zi:-zw, zb=za+0.02;
+    p2020(DB.x0,DB.x1,y0,y0+0.04,za,zb,G);                                  // 2040 onder, staand (geleiding lade)
+    p2020(DB.x0,DB.x1,y0+DB.h-0.02,y0+DB.h,za,zb,G);                        // 2020 boven
+    for(const x of [DB.x0,(DB.x0+DB.x1)/2-0.01,DB.x1-0.02]) p2020(x,x+0.02,y0+0.04,y0+DB.h-0.02,za,zb,G); // 2020 posten 60
+  }
+  p2020(DB.x0,DB.x0+0.02,y0+DB.h-0.02,y0+DB.h,-zi,zi,G);                      // dwarsligger boven voor 360
+  p2020(DB.x1-0.02,DB.x1,y0+DB.h-0.02,y0+DB.h,-zi,zi,G);                      // dwarsligger boven achter 360
+  p2020(DB.x0,DB.x0+0.02,y0,y0+0.02,-zi,zi,G);                                // aanslag onder voor 360
+  const top=new THREE.Mesh(new THREE.BoxGeometry(DB.x1-DB.x0,DB.top,DB.w),new THREE.MeshStandardMaterial({color:0xd8c39a,roughness:0.8}));
+  top.position.set((DB.x0+DB.x1)/2,y0+DB.h+DB.top/2,0); top.castShadow=true; top.receiveShadow=true; G.add(top);
+  const D=new THREE.Group(); G.add(D);
+  const ply=new THREE.MeshStandardMaterial({color:0xcdb385,roughness:0.85}), seatM=new THREE.MeshStandardMaterial({color:0xb8955e,roughness:0.7});
+  const yd=FLOOR+0.004, H=0.096, zh=zi-0.005, xa=DB.x0+0.025, xb=DB.x1;
+  const bx=(x0,x1,ya,yb,z0,z1,m=ply)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,yb-ya,z1-z0),m);b.position.set((x0+x1)/2,(ya+yb)/2,(z0+z1)/2);b.castShadow=true;b.receiveShadow=true;D.add(b);return b};
+  bx(xa,xb,yd,yd+0.012,-zh,zh);                                               // bodem 12
+  bx(xa,xb,yd+0.012,yd+H-0.018,zh-0.012,zh); bx(xa,xb,yd+0.012,yd+H-0.018,-zh,-zh+0.012); bx(xa,xa+0.012,yd+0.012,yd+H-0.018,-zh,zh);
+  bx(xa,xb,yd+H-0.018,yd+H,-zh,zh,seatM);                                     // zitplank 18
+  bx(xb,xb+0.018,yd,yd+H,-zw,zw,seatM);                                       // front 400 × 100
+  bx(xb+0.018,xb+0.03,yd+0.035,yd+0.055,-0.10,0.10,new THREE.MeshStandardMaterial({color:0x2a2d31,metalness:0.5,roughness:0.4}));
+  for(const x of [xa+0.06,xb-0.06]) for(const z of [-zh+0.04,zh-0.04]) bx(x-0.02,x+0.02,FLOOR,yd,z-0.015,z+0.015,new THREE.MeshStandardMaterial({color:0xf2f2f2}));
+  const b={G,D,t:0,target:0}; blocks.push(b); return b;
+}
+const BZ=CWA/2-DB.w/2;                                                        // tegen de wielkasten (binnenmaat 1.330)
+makeBlock(BZ,'ladeblok_links'); makeBlock(-BZ,'ladeblok_rechts');
+function placeDrawer(b){const e=b.t<.5?2*b.t*b.t:1-Math.pow(-2*b.t+2,2)/2; b.D.position.x=DB.out*e;}
+blocks.forEach(placeDrawer);
+{ const y=FLOOR+DB.h+DB.top, zo=CWA/2, zn=CWA/2-DB.w;
+  dim('drawer',[DB.x0,y,zo],[DB.x1,y,zo],[0,0.10,0],'1.020');
+  dim('drawer',[DB.x1,y,zn],[DB.x1,y,zo],[0,0.10,0],'400');
+  dim('drawer',[DB.x1,y,-zo],[DB.x1,y,-zn],[0,0.10,0],'400');
+  dim('drawer',[DB.x1,FLOOR+0.01,-zn],[DB.x1,FLOOR+0.01,zn],[0,0,0],'gangpad '+Math.round(2*zn*1000));
+  dim('drawer',[DB.x1,FLOOR,-zo],[DB.x1,y,-zo],[0,0,-0.10],'138');
+  dim('drawer',[CX0,FLOOR+0.005,BZ],[DB.x0,FLOOR+0.005,BZ],[0,0,0],Math.round((DB.x0-CX0)*1000).toLocaleString('nl-NL'));
+  dim('drawer',[DB.x1+0.02,FLOOR+0.14,BZ],[DB.x1+0.02+DB.out,FLOOR+0.14,BZ],[0,0,0],'uitschuif 600');
+  for(const zc of [BZ,-BZ]) outline('drawer',[[DB.x0,FLOOR+0.002,zc-DB.w/2],[DB.x1,FLOOR+0.002,zc-DB.w/2],[DB.x1,FLOOR+0.002,zc+DB.w/2],[DB.x0,FLOOR+0.002,zc+DB.w/2]]);
+}
+
+// ===== Achterkast: losse 2020-unit, 400 diep tegen de achterdeuren, 600 hoog, voet in het gangpad tussen de zitlades =====
+LAYERS.unit={token:'--unit'}; {const g=new THREE.Group();van.add(g);LAYERS.unit.group=g;
+  LAYERS.unit.mat=new THREE.LineBasicMaterial({color:cssVar('--unit')||'#4d7c0f',depthTest:false,transparent:true});}
+const unit=new THREE.Group(); unit.name='achterkast'; van.add(unit);
+const U={x0:L-0.035-0.40, x1:L-0.035, zo:0.7775, zp:0.255, zw:0.655, yS:0.40, yT:0.582, yW:0.16};
+{ const F=FLOOR, a=U.x0, b=U.x1, xs=[[a,a+0.02],[b-0.02,b]], P=(x0,x1,y0,y1,z0,z1)=>p2020(x0,x1,F+y0,F+y1,z0,z1,unit);
+  for(const [x0,x1] of xs){
+    P(x0,x1,U.yS,U.yS+0.02,-U.zo,U.zo); P(x0,x1,U.yT-0.02,U.yT,-U.zo,U.zo);                   // liggers breedte 1.555
+    for(const z of [-U.zo,U.zo-0.02,-U.zp,U.zp-0.02]) P(x0,x1,U.yS+0.02,U.yT-0.02,z,z+0.02);    // posten bovenvak 142
+    for(const z of [-U.zp,U.zp-0.02]) P(x0,x1,0,U.yS,z,z+0.02);                                 // voetposten 400
+    P(x0,x1,0,0.02,-U.zp+0.02,U.zp-0.02);                                                       // dwarsligger voet 470
+    for(const sg of [1,-1]){ const zA=sg>0?U.zp:-U.zw, zB=sg>0?U.zw:-U.zp;
+      P(x0,x1,U.yW,U.yW+0.02,zA,zB);                                                            // vleugelligger 400
+      const zq=sg>0?U.zw-0.02:-U.zw; P(x0,x1,U.yW+0.02,U.yS,zq,zq+0.02); }                      // vleugelpost 220
+  }
+  for(const z of [-U.zo,U.zo-0.02]) for(const y of [U.yS,U.yT-0.02]) P(a+0.02,b-0.02,y,y+0.02,z,z+0.02); // diepte eindes 4 × 360
+  for(const z of [-U.zp,U.zp-0.02]) P(a+0.02,b-0.02,0,0.02,z,z+0.02);                          // diepte voet 2 × 360
+  for(const z of [-U.zw,U.zw-0.02]) P(a+0.02,b-0.02,U.yW,U.yW+0.02,z,z+0.02);                    // diepte vleugel 2 × 360
+  const wood=new THREE.MeshStandardMaterial({color:0xd8c39a,roughness:0.8}), wood2=new THREE.MeshStandardMaterial({color:0xcdb385,roughness:0.85});
+  const pl=(x0,x1,y0,y1,z0,z1,m)=>{const k=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0),m);k.position.set((x0+x1)/2,F+(y0+y1)/2,(z0+z1)/2);k.castShadow=true;k.receiveShadow=true;unit.add(k);};
+  pl(a,b,U.yT,U.yT+0.018,-U.zo,U.zo,wood);                                       // blad 18
+  pl(a+0.002,b-0.002,U.yS+0.02,U.yS+0.032,-U.zo+0.002,U.zo-0.002,wood2);         // legbord bovenvak
+  for(const sg of [1,-1]) pl(a+0.002,b-0.002,U.yW+0.02,U.yW+0.032,sg>0?U.zp:-U.zw,sg>0?U.zw:-U.zp,wood2); // vleugelborden
+  pl(a+0.02,b-0.02,0.02,0.032,-U.zp+0.02,U.zp-0.02,wood2);                       // bord in de voet
+}
+{ const F=FLOOR, yt=F+U.yT+0.018;
+  dim('unit',[U.x1,yt,-U.zo],[U.x1,yt,U.zo],[0,0.10,0],'1.555');
+  dim('unit',[U.x0,yt,U.zo],[U.x1,yt,U.zo],[0,0.10,0],'400');
+  dim('unit',[U.x1,F,-U.zo],[U.x1,yt,-U.zo],[0.12,0,0],'600');
+  dim('unit',[U.x1,F+0.01,-U.zp],[U.x1,F+0.01,U.zp],[0.12,0,0],'voet 510');
+  dim('unit',[U.x1,F,U.zw],[U.x1,F+U.yW,U.zw],[0.12,0,0],'160');
+  dim('unit',[U.x1,F,U.zo],[U.x1,F+U.yS,U.zo],[0.12,0,0],'400');
+}
+
+// maatvoering ligvlak (gedeeld met het klapbed)
+const BED={x1:L-0.035, len:1.90}; BED.x0=BED.x1-BED.len;
+
+// ===== Optioneel klapbed: 2 helften over de lengte, scharnieren aan de wand, opklappen als murphy bed =====
+LAYERS.murphy={token:'--murphy'}; {const g=new THREE.Group();van.add(g);LAYERS.murphy.group=g;
+  LAYERS.murphy.mat=new THREE.LineBasicMaterial({color:cssVar('--murphy')||'#6d28d9',depthTest:false,transparent:true});}
+const murphy=new THREE.Group(); murphy.name='klapbed'; murphy.visible=false; van.add(murphy);
+const MB={x0:BED.x0, xs:BED.x0+0.40, x1:BED.x1, zw:0.7775, w:0.7755, yb:0.69, mw:0.70, mt:0.08, rail0:CX0+0.79};
+const halves=[];
+{ const F=FLOOR, mat=new THREE.MeshStandardMaterial({color:0x8a96a8,roughness:0.95}), bamM=new THREE.MeshStandardMaterial({color:0xd9b778,roughness:0.6});
+  const hingeM=new THREE.MeshStandardMaterial({color:0xb8bec5,metalness:0.8,roughness:0.3});
+  for(const sg of [1,-1]){                       // +1 = links (bestuurderskant), -1 = rechts
+    const pv=new THREE.Group(); pv.position.set(0,F+MB.yb,sg*MB.zw); murphy.add(pv);   // scharnieras: onderkant frame aan de wand
+    const zin=-sg*MB.w;                          // binnenrand (lokaal)
+    const P=(x0,x1,y0,y1,z0,z1)=>p2020(x0,x1,y0,y1,Math.min(z0,z1),Math.max(z0,z1),pv);
+    P(MB.xs,MB.x1,0,0.02,0,-sg*0.02); P(MB.xs,MB.x1,0,0.02,zin,zin+sg*0.02);          // langsliggers 1.500 (scharnierend deel)
+    const xs=[MB.xs+0.002,MB.xs+0.375,MB.xs+0.75,MB.xs+1.125,MB.x1-0.02];
+    for(const x of xs) P(x,x+0.02,0,0.02,-sg*0.02,zin+sg*0.02);                       // dwarsliggers 736
+    const bam=new THREE.Mesh(new THREE.BoxGeometry(MB.x1-MB.xs,0.004,MB.w),bamM); bam.position.set((MB.xs+MB.x1)/2,0.022,-sg*MB.w/2); bam.castShadow=true; bam.receiveShadow=true; pv.add(bam);
+    const mz=zin+sg*MB.mw/2;                     // matras tegen de binnenrand: samen 1.400 in het midden
+    const mtr=new THREE.Mesh(new THREE.BoxGeometry(MB.x1-MB.xs-0.003,MB.mt,MB.mw),mat); mtr.position.set((MB.xs+MB.x1)/2+0.0015,0.024+MB.mt/2,mz); mtr.castShadow=true; mtr.receiveShadow=true; pv.add(mtr);
+    for(const xh of [MB.rail0+0.08,(MB.rail0+MB.x1)/2,MB.x1-0.08]){ const h=new THREE.Mesh(new THREE.CylinderGeometry(0.008,0.008,0.10,12),hingeM); h.rotation.z=Math.PI/2; h.position.set(xh,0,0); pv.add(h); }
+    for(const xs2 of [MB.xs+0.30,MB.x1-0.30]){ const st=new THREE.Mesh(new THREE.BoxGeometry(0.03,MB.mt+0.006,MB.mw+0.006),new THREE.MeshStandardMaterial({color:0x222428})); st.position.set(xs2,0.024+MB.mt/2,mz); pv.add(st); } // spanbanden
+    const zr0=sg>0?MB.zw-0.0:-MB.zw-0.005;       // wandrail achter de schuifdeuropening
+    p2020(MB.rail0,MB.x1,F+MB.yb-0.02,F+MB.yb,sg>0?MB.zw-0.015:-MB.zw-0.005,sg>0?MB.zw+0.005:-MB.zw+0.015,murphy);
+    halves.push({pv,sg});
+  }
+  const legs=new THREE.Group(); murphy.add(legs); MB.legs=legs;
+  for(const d of [0.80,1.86]) p2020(CX0+d-0.01,CX0+d+0.01,F,F+MB.yb,-0.01,0.01,legs);  // losse middenpoten
+}
+for(const h of halves){h.t=0;h.target=0;}       // halves[0] = links, halves[1] = rechts, elk apart op te klappen
+function placeMurphy(){ for(const h of halves){const e=h.t<.5?2*h.t*h.t:1-Math.pow(-2*h.t+2,2)/2; h.pv.rotation.x=h.sg*Math.PI/2*e;}
+  MB.legs.visible=halves.some(h=>h.t<0.02);}   // middenpoten blijven staan zolang er nog een helft plat ligt
+placeMurphy();
+{ const F=FLOOR, yt=F+MB.yb+0.024+MB.mt, xa=MB.x1;
+  dim('murphy',[xa,yt,0],[xa,yt,MB.zw],[0,0.10,0],'775');
+  dim('murphy',[xa,yt,-MB.zw],[xa,yt,0],[0,0.10,0],'775');
+  dim('murphy',[xa,yt,-MB.mw],[xa,yt,MB.mw],[0,0.22,0],'matras 2 × 700');
+  dim('murphy',[MB.x0,yt,MB.zw],[MB.x1,yt,MB.zw],[0,0.22,0],'1.900');
+  dim('murphy',[MB.x0,yt,MB.zw],[MB.xs,yt,MB.zw],[0,0.10,0],'kop 400');
+  dim('murphy',[MB.xs,yt,MB.zw],[MB.x1,yt,MB.zw],[0,0.10,0],'1.500');
+  dim('murphy',[MB.x0,F,-MB.zw],[MB.x0,yt,-MB.zw],[-0.10,0,0],'794');
+  dim('murphy',[MB.x1,F+MB.yb,MB.zw+0.03],[MB.x1,F+MB.yb+MB.w,MB.zw+0.03],[0.10,0,0],'opgeklapt 1.466');
+}
+
+// ===== Optionele zijkasten: 2 gelijke 2020-kasten tegen de wanden tussen keukenblok en achterkast, met kussens =====
+LAYERS.side={token:'--side'}; {const g=new THREE.Group();van.add(g);LAYERS.side.group=g;
+  LAYERS.side.mat=new THREE.LineBasicMaterial({color:cssVar('--side')||'#b45309',depthTest:false,transparent:true});}
+const sideCabs=new THREE.Group(); sideCabs.name='zijkasten'; sideCabs.visible=false; van.add(sideCabs);
+const SC={x0:CX0+0.775, xA:CX0+1.05, x1:CX0+1.88, zw:CW/2, d:0.50, yB:0.40, yT:0.582, cush:0.08};
+{ const F=FLOOR, wood=new THREE.MeshStandardMaterial({color:0xd8c39a,roughness:0.8}), wood2=new THREE.MeshStandardMaterial({color:0xcdb385,roughness:0.85}),
+    fab=new THREE.MeshStandardMaterial({color:0x6b7c74,roughness:0.95});
+  for(const sg of [1,-1]){
+    const zo=sg*SC.zw, zi=sg*(SC.zw-SC.d), zlo=Math.min(zo,zi), zhi=Math.max(zo,zi);
+    const P=(x0,x1,y0,y1,z0,z1)=>p2020(x0,x1,F+y0,F+y1,z0,z1,sideCabs);
+    const zs=[zlo,zhi-0.02];
+    for(const z of zs){
+      P(SC.x0,SC.x1,SC.yT-0.02,SC.yT,z,z+0.02);                         // langsligger boven 1.105
+      P(SC.xA,SC.x1,SC.yB,SC.yB+0.02,z,z+0.02);                         // langsligger over wielkast 830
+      P(SC.x0,SC.xA,0,0.02,z,z+0.02);                                   // langsligger vloer 275
+      for(const x of [SC.x0,SC.xA-0.02]) P(x,x+0.02,0.02,SC.yT-0.02,z,z+0.02);   // posten staand deel 562
+      P(SC.x1-0.02,SC.x1,SC.yB+0.02,SC.yT-0.02,z,z+0.02);               // post achter 142
+    }
+    const dz=[zlo+0.02,zhi-0.02];
+    const D=(x,y)=>P(x,x+0.02,y,y+0.02,dz[0],dz[1]);                    // diepteliggers 460
+    D(SC.x0,0); D(SC.x0,SC.yT-0.02); D(SC.xA-0.02,0); D(SC.xA-0.02,SC.yB); D(SC.xA-0.02,SC.yT-0.02);
+    D(SC.x1-0.02,SC.yB); D(SC.x1-0.02,SC.yT-0.02); D((SC.xA+SC.x1)/2-0.01,SC.yT-0.02);
+    const pl=(x0,x1,y0,y1,z0,z1,m)=>{const k=new THREE.Mesh(new THREE.BoxGeometry(x1-x0,y1-y0,z1-z0),m);k.position.set((x0+x1)/2,F+(y0+y1)/2,(z0+z1)/2);k.castShadow=true;k.receiveShadow=true;sideCabs.add(k);};
+    pl(SC.x0,SC.x1,SC.yT,SC.yT+0.018,zlo,zhi,wood);                     // blad
+    pl(SC.xA,SC.x1-0.002,SC.yB+0.02,SC.yB+0.032,zlo+0.002,zhi-0.002,wood2); // legbord over wielkast
+    pl(SC.x0+0.02,SC.xA-0.02,0.02,0.032,dz[0],dz[1],wood2);              // bodem staand deel
+    const cz0=sg>0?zi:zo+0.025, cz1=sg>0?zo-0.025:zi;                   // kussen 475 diep, 25 vrij van de wand
+    const xm=SC.x0+0.78;                       // voorste 780: los kussen óf het kopdeel van het klapbed
+    const cf=new THREE.Mesh(new THREE.BoxGeometry(0.774,SC.cush,cz1-cz0),fab); cf.position.set(SC.x0+0.39,F+SC.yT+0.018+SC.cush/2,(cz0+cz1)/2); cf.castShadow=true; cf.receiveShadow=true; sideCabs.add(cf); SC.front=(SC.front||[]).concat(cf);
+    const cr=new THREE.Mesh(new THREE.BoxGeometry(SC.x1-xm-0.006,SC.cush,cz1-cz0),fab); cr.position.set((xm+SC.x1)/2,F+SC.yT+0.018+SC.cush/2,(cz0+cz1)/2); cr.castShadow=true; cr.receiveShadow=true; sideCabs.add(cr);
+  }
+}
+{ const F=FLOOR, yt=F+SC.yT+0.018+SC.cush, zi=SC.zw-SC.d;
+  dim('side',[SC.x0,yt,SC.zw],[SC.x1,yt,SC.zw],[0,0.10,0],'1.105');
+  dim('side',[SC.x0,yt,zi],[SC.x0,yt,SC.zw],[0,0.10,0],'500');
+  dim('side',[SC.x0,F,zi],[SC.x0,F+SC.yT+0.018,zi],[-0.10,0,0],'600');
+  dim('side',[SC.x0,F+SC.yT+0.018,-zi],[SC.x0,yt,-zi],[-0.10,0,0],'80');
+  dim('side',[SC.x1,F,zi],[SC.x1,F+SC.yB,zi],[0.06,0,0],'400');
+  dim('side',[CX0,F+0.005,SC.zw-0.05],[SC.x0,F+0.005,SC.zw-0.05],[0,0,0],'775');
+}
+
+// ===== Kopdelen klapbed (bij de schuifdeuren): los te nemen en als kussen op de zijkasten te leggen =====
+const heads=[];
+{ const F=FLOOR, mat=new THREE.MeshStandardMaterial({color:0x8a96a8,roughness:0.95}), bamM=new THREE.MeshStandardMaterial({color:0xd9b778,roughness:0.6});
+  const hl=MB.xs-MB.x0, hw=MB.w;
+  for(const sg of [1,-1]){
+    const g=new THREE.Group(); murphy.add(g);
+    const P=(x0,x1,y0,y1,z0,z1)=>p2020(x0,x1,y0,y1,z0,z1,g);
+    for(const z of [-hw/2,hw/2-0.02]) P(-hl/2,hl/2-0.003,0,0.02,z,z+0.02);              // langsliggers 400
+    for(const x of [-hl/2,hl/2-0.023]) P(x,x+0.02,0,0.02,-hw/2+0.02,hw/2-0.02);         // dwarsliggers 736
+    const bam=new THREE.Mesh(new THREE.BoxGeometry(hl-0.003,0.004,hw),bamM); bam.position.set(-0.0015,0.022,0); g.add(bam);
+    const mo=-sg*(hw/2-MB.mw/2);                 // matras aan de binnenrand, net als het grote deel
+    const m=new THREE.Mesh(new THREE.BoxGeometry(hl-0.006,MB.mt,MB.mw),mat); m.position.set(-0.003,0.024+MB.mt/2,mo); m.castShadow=true; m.receiveShadow=true; g.add(m);
+    const bedPos=new THREE.Vector3(MB.x0+hl/2,F+MB.yb,sg*(MB.zw-hw/2));
+    const cabPos=new THREE.Vector3(SC.x0+hw/2+0.005,F+SC.yT+0.018,sg*(SC.zw-0.109-hl/2)); // 400 diep, vrij van opgeklapt bed tegen de wand
+    heads.push({g,sg,bedPos,cabPos,rot:sg*Math.PI/2});
+  }
+}
+for(const h of heads){h.t=0;h.target=0;}       // heads[0] = links, heads[1] = rechts
+function placeHeads(){
+  for(const h of heads){ const e=h.t<.5?2*h.t*h.t:1-Math.pow(-2*h.t+2,2)/2; h.g.position.lerpVectors(h.bedPos,h.cabPos,e); h.g.position.y+=Math.sin(Math.PI*e)*0.35; h.g.rotation.y=h.rot*e; }
+  for(const c of SC.front||[]) c.visible=!murphy.visible;   // met klapbed is het kopdeel het voorste kussen
+}
+placeHeads();
+
+// --- Views ---
+const V={ '3d':{p:[5.6,3.0,6.2],o:false}, side:{p:[0,1.1,12],o:true}, front:{p:[-12,1.1,0],o:true},
+          rear:{p:[12,1.1,0],o:true}, top:{p:[0,12,0.001],o:true} };
+let anim=null;
+function setView(k){
+  document.querySelectorAll('[id^="v-"]').forEach(b=>b.setAttribute('aria-pressed',b.id==='v-'+k));
+  const v=V[k]; const target=new THREE.Vector3(0,k==='top'?0:1.05,0);
+  const next=v.o?ortho:persp;
+  if(next!==cam){next.position.copy(cam.position); next.up.set(0,1,0); cam=next; controls.object=cam;}
+  if(v.o){ortho.zoom=1; ortho.updateProjectionMatrix();}
+  controls.maxPolarAngle=k==='top'?Math.PI:Math.PI/2-0.02;
+  controls.enableRotate=!v.o;
+  anim={from:cam.position.clone(),to:new THREE.Vector3(...v.p),tf:controls.target.clone(),tt:target,t:0};
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) anim.t=1;
+}
+Object.keys(V).forEach(k=>document.getElementById('v-'+k).addEventListener('click',()=>setView(k)));
+
+function toggle(id,fn){const b=document.getElementById(id);b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);fn(on)})}
+let showDims=false, showCargo=false;
+const layerOn={ext:false,wheel:false,cargo:false,open:false,hook:false,kitchen:false,drawer:false,unit:false,murphy:false,side:false};
+for(const k in layerOn){const cb=document.getElementById('L-'+k);cb.checked=!!layerOn[k];
+  cb.addEventListener('change',()=>{layerOn[k]=cb.checked;
+    if((k==='cargo'||k==='hook')&&cb.checked&&!showCargo){showCargo=true;document.getElementById('t-cargo').setAttribute('aria-pressed','true')}
+    if(cb.checked&&!showDims){showDims=true;document.getElementById('t-dims').setAttribute('aria-pressed','true')}
+    saveLayers();applyVis()})}
+function saveLayers(){try{localStorage.setItem('pv5-layers',JSON.stringify(layerOn))}catch(e){}}
+function setAll(v){for(const k in layerOn){layerOn[k]=v;document.getElementById('L-'+k).checked=v}
+  if(v){showDims=true;document.getElementById('t-dims').setAttribute('aria-pressed','true')}saveLayers();applyVis()}
+document.getElementById('all-on').addEventListener('click',()=>setAll(true));
+document.getElementById('all-off').addEventListener('click',()=>setAll(false));
+toggle('t-dims',on=>{showDims=on;applyVis()});
+toggle('t-cargo',on=>{showCargo=on;applyVis()});
+function drawerToggle(i){return on=>{blocks[i].target=on?1:0; if(on&&rearTarget!==1){rearTarget=1;document.getElementById('t-rear').setAttribute('aria-pressed','true');}
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){blocks[i].t=blocks[i].target;placeDrawer(blocks[i]);rearT=rearTarget;placeRear();}}}
+toggle('t-drawerL',drawerToggle(0)); toggle('t-drawerR',drawerToggle(1));
+toggle('t-side',on=>{sideCabs.visible=on;});
+function setPressed(id,v){document.getElementById(id).setAttribute('aria-pressed',v?'true':'false');}
+function headToggle(i){return on=>{ const h=heads[i]; h.target=on?1:0;
+  if(!murphy.visible){murphy.visible=true;setPressed('t-murphy',true);}
+  if(on){ sideCabs.visible=true; setPressed('t-side',true); }
+  halves[i].target=on?1:0; setPressed(i?'t-foldR':'t-foldL',on);        // die bedhelft klapt op als het kopdeel kussen wordt
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){h.t=h.target;halves[i].t=halves[i].target;placeMurphy();}
+  placeHeads(); };}
+toggle('t-headL',headToggle(0)); toggle('t-headR',headToggle(1));
+toggle('t-murphy',on=>{murphy.visible=on; placeHeads();});
+function foldToggle(i){return on=>{const h=halves[i]; h.target=on?1:0;
+  if(on&&!murphy.visible){murphy.visible=true;document.getElementById('t-murphy').setAttribute('aria-pressed','true');placeHeads();}
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){h.t=h.target;placeMurphy();}};}
+toggle('t-foldL',foldToggle(0)); toggle('t-foldR',foldToggle(1));
+toggle('t-unit',on=>{unit.visible=on;});
+toggle('t-kitchen',on=>{kitchen.visible=on;});
+kitchen.visible=false; unit.visible=false;          // start: dichte, lege bus
+toggle('t-hob',on=>{hobTarget=on?1:0;
+  if(on&&doorTarget<1){doorTarget=1;document.getElementById('t-doors').setAttribute('aria-pressed','true');}
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){if(on){doorT=1;placeDoors();}hobT=hobTarget;placeHob();}});
+toggle('t-pass',on=>{passTarget=on?1:0; if(matchMedia('(prefers-reduced-motion: reduce)').matches){passT=passTarget;placePass()}});
+toggle('t-rear',on=>{rearTarget=on?1:0; if(matchMedia('(prefers-reduced-motion: reduce)').matches){rearT=rearTarget;placeRear()}});
+toggle('t-doors',on=>{doorTarget=on?1:0; if(matchMedia('(prefers-reduced-motion: reduce)').matches){doorT=doorTarget;placeDoors()}});
+let infoOn=true;
+const infoBtn=document.getElementById('t-info'); infoBtn.setAttribute('aria-pressed',infoOn);
+function setInfo(v){infoOn=v;infoBtn.setAttribute('aria-pressed',infoOn);
+  try{localStorage.setItem('pv5-info',infoOn?'1':'0')}catch(e){}applyInfo()}
+infoBtn.addEventListener('click',()=>setInfo(!infoOn));
+document.getElementById('info-close').addEventListener('click',()=>{setInfo(false);infoBtn.focus()});
+function applyInfo(){
+  document.getElementById('app').classList.toggle('noinfo',!infoOn);
+  let any=false;
+  document.querySelectorAll('section.info[data-layer]').forEach(sec=>{
+    const on=showDims&&!!layerOn[sec.dataset.layer]; sec.hidden=!on; any=any||on});
+  document.getElementById('info-note').hidden=!any;
+  document.getElementById('info-empty').hidden=any;
+}
+function applyVis(){
+  applyInfo();
+  cargo.visible=showCargo; interior.visible=!showCargo;
+  for(const k in LAYERS) LAYERS[k].group.visible=showDims&&layerOn[k];
+  for(const m of bodyParts){m.material.opacity=showCargo?(m.material===glass?0.12:0.18):(m.material===glass?0.18:1);
+    m.material.depthWrite=!showCargo&&m.material!==glass; m.castShadow=!showCargo;}
+}
+applyVis();
+
+// --- Theme ---
+function applyTheme(){
+  const bg=cssVar('--stage')||'#d9dcdf'; renderer.setClearColor(bg);
+  const dark=new THREE.Color(bg).getHSL({}).l<0.4;
+  grid.material.color.set(dark?0xffffff:0x000000); ground.material.opacity=dark?0.45:0.22;
+  for(const k in LAYERS){LAYERS[k].mat.color.set(cssVar(LAYERS[k].token));if(LAYERS[k].solid)LAYERS[k].solid.color.set(cssVar(LAYERS[k].token));}
+  cargoFill.color.set(cssVar('--cargo')); cargoLine.color.set(cssVar('--cargo'));
+}
+applyTheme();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',applyTheme);
+new MutationObserver(applyTheme).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+// --- Resize ---
+function resize(){
+  const w=stage.clientWidth,h=stage.clientHeight; renderer.setSize(w,h,false);
+  persp.aspect=w/h; persp.updateProjectionMatrix();
+  const span=6.8, a=w/h; let hh=span/2/Math.min(a,1.6)*1.0; if(a<1) hh=span/2/a;
+  ortho.left=-hh*a; ortho.right=hh*a; ortho.top=hh; ortho.bottom=-hh; ortho.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage); resize();
+
+// --- Loop ---
+const tmp=new THREE.Vector3();
+persp.position.set(...V['3d'].p); controls.update();
+window.__view=(p,t)=>{anim=null;persp.position.set(...p);controls.target.set(...t);controls.update();};
+function loop(){
+  if(heads.some(h=>h.t!==h.target)){for(const h of heads){const st=0.02; h.t=h.target>h.t?Math.min(h.target,h.t+st):Math.max(h.target,h.t-st);} placeHeads();}
+  if(halves.some(h=>h.t!==h.target)){for(const h of halves){const st=0.02; h.t=h.target>h.t?Math.min(h.target,h.t+st):Math.max(h.target,h.t-st);} placeMurphy();}
+  for(const b of blocks) if(b.t!==b.target){const st=0.025; b.t=b.target>b.t?Math.min(b.target,b.t+st):Math.max(b.target,b.t-st); placeDrawer(b);}
+  if(hobT!==hobTarget && (hobTarget===0 || doorT>=0.999)){const st=0.02; hobT=hobTarget>hobT?Math.min(hobTarget,hobT+st):Math.max(hobTarget,hobT-st); placeHob();}
+  if(passT!==passTarget){const st=0.025; passT=passTarget>passT?Math.min(passTarget,passT+st):Math.max(passTarget,passT-st); placePass();}
+  if(rearT!==rearTarget){const st=0.018; rearT=rearTarget>rearT?Math.min(rearTarget,rearT+st):Math.max(rearTarget,rearT-st); placeRear();}
+  if(doorT!==doorTarget){const st=0.022; doorT=doorTarget>doorT?Math.min(doorTarget,doorT+st):Math.max(doorTarget,doorT-st); placeDoors();}
+  if(anim){anim.t=Math.min(1,anim.t+0.045); const e=1-Math.pow(1-anim.t,3);
+    cam.position.lerpVectors(anim.from,anim.to,e); controls.target.lerpVectors(anim.tf,anim.tt,e);
+    if(anim.t>=1) anim=null;}
+  controls.update(); renderer.render(scene,cam);
+  const w=stage.clientWidth,h=stage.clientHeight;
+  for(const d of dims){
+    const vis=d.group.visible; d.el.hidden=!vis; if(!vis) continue;
+    tmp.copy(d.mid); van.localToWorld(tmp); tmp.project(cam);
+    d.el.hidden=tmp.z>1;
+    d.el.style.left=((tmp.x+1)/2*w)+'px'; d.el.style.top=((1-tmp.y)/2*h)+'px';
+  }
+  requestAnimationFrame(loop);
+}
+loop();
+})();
+</script>
+
+</body></html>
